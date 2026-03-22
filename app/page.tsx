@@ -5,6 +5,7 @@ import CalculatorForm, { DEFAULTS, type CalculatorInputs } from "@/components/Ca
 import ResultsDisplay from "@/components/ResultsDisplay";
 import FundGrowthChart from "@/components/FundGrowthChart";
 import FutureSalarioSection from "@/components/FutureSalarioSection";
+import MathSection from "@/components/MathSection";
 import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
 import { projectSalarioMinimoScenarios } from "@/lib/salarioMinimo";
 import salarioData from "@/data/salario-minimo.json";
@@ -97,6 +98,14 @@ export default function Home() {
 
         {growthData.length > 0 && (
           <FundGrowthChart data={growthData} retirementAge={inputs.retirementAge} />
+        )}
+
+        {salarioScenarios && (
+          <MathSection
+            historicalData={salarioData.data}
+            scenarios={salarioScenarios}
+            targetYear={retirementYear}
+          />
         )}
       </div>
     </main>

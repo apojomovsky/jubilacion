@@ -1,0 +1,115 @@
+"use client";
+
+import { useState } from "react";
+import SalarioMinimoChart from "@/components/SalarioMinimoChart";
+import YoYGrowthChart from "@/components/YoYGrowthChart";
+import type { SalarioMinimoDataPoint, SalarioMinimoScenarios } from "@/lib/salarioMinimo";
+
+interface Props {
+  historicalData: SalarioMinimoDataPoint[];
+  scenarios: SalarioMinimoScenarios;
+  targetYear: number;
+}
+
+function ModelCard({ scenarios }: { scenarios: SalarioMinimoScenarios }) {
+  const { moderate } = scenarios;
+  const r = moderate.annualGrowthRate;
+  const rPct = (r * 100).toFixed(2);
+
+  return (
+    <div className="bg-gray-50 rounded-lg border border-gray-200 p-5 flex flex-col gap-4">
+      <div>
+        <h3 className="font-semibold text-gray-800">Modelo utilizado: CAGR (crecimiento compuesto anual)</h3>
+        <p className="text-sm text-gray-600 mt-1">
+          No usamos regresión lineal ni polinómica. Los salarios se ajustan por porcentaje, no en montos fijos,
+          por lo que el crecimiento es naturalmente exponencial. El modelo correcto es el de interés compuesto:
+        </p>
+      </div>
+
+      <div className="bg-white rounded border border-gray-200 px-4 py-3 font-mono text-sm text-gray-700">
+        <p>S(t) = S₀ × (1 + r)^t</p>
+        <p className="text-gray-400 mt-1 text-xs">
+          S₀ = salario mínimo base · r = tasa de crecimiento anual · t = años hacia el futuro
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
+        <div className="bg-white rounded border border-gray-200 p-3">
+          <p className="text-xs text-gray-400">Período analizado</p>
+          <p className="font-semibold">{moderate.fromYear}–{moderate.toYear}</p>
+        </div>
+        <div className="bg-white rounded border border-gray-200 p-3">
+          <p className="text-xs text-gray-400">Datos disponibles</p>
+          <p className="font-semibold">{moderate.dataPointCount} puntos</p>
+        </div>
+        <div className="bg-white rounded border border-gray-200 p-3">
+          <p className="text-xs text-gray-400">CAGR histórico</p>
+          <p className="font-semibold text-blue-600">{rPct}% anual</p>
+        </div>
+        <div className="bg-white rounded border border-gray-200 p-3">
+          <p className="text-xs text-gray-400">Spread de escenarios</p>
+          <p className="font-semibold">±2 pp</p>
+        </div>
+      </div>
+
+      <div>
+        <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-1">Escenarios</p>
+        <div className="flex flex-col gap-1 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-orange-400 inline-block" />
+            <span className="text-gray-700">Lento: {((scenarios.slow.annualGrowthRate) * 100).toFixed(2)}% — el salario mínimo crece menos que el promedio histórico</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-blue-500 inline-block" />
+            <span className="text-gray-700">Histórico: {rPct}% — el salario mínimo mantiene su ritmo de crecimiento</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-green-500 inline-block" />
+            <span className="text-gray-700">Alto: {((scenarios.fast.annualGrowthRate) * 100).toFixed(2)}% — mayor inflación o presión salarial</span>
+          </div>
+        </div>
+        <p className="text-xs text-gray-400 mt-2">
+          A mayor crecimiento del salario mínimo, menor es el poder adquisitivo relativo de tu jubilación.
+          El escenario "alto" es el desfavorable para el jubilado.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+export default function MathSection({ historicalData, scenarios, targetYear }: Props) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="border border-gray-200 rounded-lg overflow-hidden">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-5 py-3 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+      >
+        <span className="text-sm font-medium text-gray-700">
+          Ver modelo matemático y datos históricos
+        </span>
+        <span className="text-gray-400 text-lg leading-none">{open ? "▲" : "▼"}</span>
+      </button>
+
+      {open && (
+        <div className="flex flex-col gap-6 p-5 bg-white">
+          <div>
+            <h3 className="font-semibold text-gray-800 mb-3">Evolución histórica del salario mínimo + proyección</h3>
+            <SalarioMinimoChart historicalData={historicalData} scenarios={scenarios} targetYear={targetYear} />
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-800 mb-3">Crecimiento año a año (varianza histórica)</h3>
+            <YoYGrowthChart historicalData={historicalData} historicalCAGR={scenarios.moderate.annualGrowthRate} />
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-800 mb-3">Modelo y parámetros</h3>
+            <ModelCard scenarios={scenarios} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
