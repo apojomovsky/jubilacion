@@ -11,9 +11,9 @@ export interface CalculatorInputs {
   annualFeeRate: number;
 }
 
-// Salario mínimo legal vigente 2025, según Decreto N° 2.133/2025 del MJT
-export const SALARIO_MINIMO_2025 = 2_550_307;
-export const SALARIO_MINIMO_SOURCE = "Decreto N° 2.133/2025 del Ministerio de Justicia y Trabajo";
+// Salario mínimo legal vigente 2025 (vigente desde julio 2025)
+export const SALARIO_MINIMO_2025 = 2_899_048;
+export const SALARIO_MINIMO_SOURCE = "MTESS Paraguay / impuestospy.com";
 
 const DEFAULTS: CalculatorInputs = {
   currentAge: 30,

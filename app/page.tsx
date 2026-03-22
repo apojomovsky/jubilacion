@@ -4,9 +4,13 @@ import { useState, useMemo } from "react";
 import CalculatorForm, { DEFAULTS, type CalculatorInputs } from "@/components/CalculatorForm";
 import ResultsDisplay from "@/components/ResultsDisplay";
 import FundGrowthChart from "@/components/FundGrowthChart";
+import FutureSalarioSection from "@/components/FutureSalarioSection";
 import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
+import { projectSalarioMinimoScenarios } from "@/lib/salarioMinimo";
+import salarioData from "@/data/salario-minimo.json";
 
-const SCENARIO_SPREAD = 0.03; // ±3 puntos porcentuales sobre el rendimiento anual
+const SCENARIO_SPREAD = 0.03;
+const CURRENT_YEAR = 2025;
 
 export default function Home() {
   const [inputs, setInputs] = useState<CalculatorInputs>(DEFAULTS);
@@ -14,6 +18,8 @@ export default function Home() {
   const isValid =
     inputs.retirementAge > inputs.currentAge &&
     inputs.lifeExpectancy > inputs.retirementAge;
+
+  const retirementYear = CURRENT_YEAR + (inputs.retirementAge - inputs.currentAge);
 
   const scenarios = useMemo(() => {
     if (!isValid) return null;
@@ -50,6 +56,11 @@ export default function Home() {
     );
   }, [inputs, isValid]);
 
+  const salarioScenarios = useMemo(() => {
+    if (!isValid) return null;
+    return projectSalarioMinimoScenarios(salarioData.data, retirementYear);
+  }, [isValid, retirementYear]);
+
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8">
@@ -76,13 +87,17 @@ export default function Home() {
           />
         )}
 
+        {scenarios && salarioScenarios && (
+          <FutureSalarioSection
+            scenarios={salarioScenarios}
+            targetYear={retirementYear}
+            monthlyPensionPayout={scenarios.base.monthlyPayout}
+          />
+        )}
+
         {growthData.length > 0 && (
           <FundGrowthChart data={growthData} retirementAge={inputs.retirementAge} />
         )}
-
-        <p className="text-xs text-gray-400">
-          Proyección en valores nominales. No considera ajuste por inflación aún. El modelo de inflación real se agregará próximamente.
-        </p>
       </div>
     </main>
   );
