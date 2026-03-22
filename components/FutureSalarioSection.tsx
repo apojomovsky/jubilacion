@@ -1,11 +1,13 @@
 "use client";
 
 import type { SalarioMinimoScenarios } from "@/lib/salarioMinimo";
+import type { SalarioScenario } from "@/components/ScenarioSelector";
 
 interface Props {
   scenarios: SalarioMinimoScenarios;
   targetYear: number;
-  monthlyPensionPayout: number; // base scenario payout, nominal PYG
+  monthlyPensionPayout: number; // payout for the selected fund scenario, nominal PYG
+  selectedSalarioScenario: SalarioScenario;
 }
 
 const PYG = new Intl.NumberFormat("es-PY", {
@@ -52,7 +54,7 @@ function ScenarioRow({ label, growthRate, projectedSalario, monthlyPayout, highl
   );
 }
 
-export default function FutureSalarioSection({ scenarios, targetYear, monthlyPensionPayout }: Props) {
+export default function FutureSalarioSection({ scenarios, targetYear, monthlyPensionPayout, selectedSalarioScenario }: Props) {
   const { slow, moderate, fast } = scenarios;
 
   return (
@@ -69,9 +71,9 @@ export default function FutureSalarioSection({ scenarios, targetYear, monthlyPen
 
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-4 gap-3 px-4 text-xs text-gray-400 font-medium uppercase tracking-wide">
-          <span>Escenario</span>
+          <span>Escenario sal. mínimo</span>
           <span>Sal. mínimo en {targetYear}</span>
-          <span>Tu renta (esperada)</span>
+          <span>Tu renta mensual</span>
           <span>Equivalencia</span>
         </div>
         <ScenarioRow
@@ -79,24 +81,27 @@ export default function FutureSalarioSection({ scenarios, targetYear, monthlyPen
           growthRate={slow.annualGrowthRate}
           projectedSalario={slow.projectedValue}
           monthlyPayout={monthlyPensionPayout}
+          highlight={selectedSalarioScenario === "slow"}
         />
         <ScenarioRow
           label={moderate.label}
           growthRate={moderate.annualGrowthRate}
           projectedSalario={moderate.projectedValue}
           monthlyPayout={monthlyPensionPayout}
-          highlight
+          highlight={selectedSalarioScenario === "moderate"}
         />
         <ScenarioRow
           label={fast.label}
           growthRate={fast.annualGrowthRate}
           projectedSalario={fast.projectedValue}
           monthlyPayout={monthlyPensionPayout}
+          highlight={selectedSalarioScenario === "fast"}
         />
       </div>
 
       <p className="text-xs text-gray-400">
-        La renta mensual mostrada corresponde al escenario esperado de rendimiento del fondo. La equivalencia cambia según qué tan rápido crezca el salario mínimo: a mayor crecimiento del salario mínimo, menor es el poder adquisitivo relativo de tu jubilación.
+        A mayor crecimiento del salario mínimo, menor es el poder adquisitivo relativo de tu jubilación.
+        El escenario "Alto" es el desfavorable para el jubilado.
       </p>
     </div>
   );

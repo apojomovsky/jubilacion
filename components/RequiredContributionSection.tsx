@@ -2,15 +2,17 @@
 
 import { calculateRequiredContribution } from "@/lib/pension";
 import type { SalarioMinimoScenarios } from "@/lib/salarioMinimo";
+import type { SalarioScenario } from "@/components/ScenarioSelector";
 
 interface Props {
-  annualReturnRate: number;       // net of fee, as decimal
+  annualReturnRate: number;       // gross rate for selected fund scenario, as decimal
   annualFeeRate: number;
   yearsContributing: number;
   yearsInRetirement: number;
   existingFund: number;
   currentMonthlyContribution: number;
   salarioScenarios: SalarioMinimoScenarios;
+  selectedSalarioScenario: SalarioScenario;
 }
 
 const PYG = new Intl.NumberFormat("es-PY", {
@@ -65,6 +67,7 @@ export default function RequiredContributionSection({
   existingFund,
   currentMonthlyContribution,
   salarioScenarios,
+  selectedSalarioScenario,
 }: Props) {
   const { slow, moderate, fast } = salarioScenarios;
 
@@ -83,11 +86,10 @@ export default function RequiredContributionSection({
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <h2 className="text-lg font-semibold">¿Cuánto tendrías que ahorrar para alcanzar 1 salario mínimo?</h2>
+        <h2 className="text-lg font-semibold">¿Cuánto necesitás ahorrar para 1 salario mínimo?</h2>
         <p className="text-sm text-gray-500 mt-1">
-          Para recibir exactamente 1x el salario mínimo proyectado al momento de tu jubilación,
-          este es el aporte mensual necesario según cada escenario de crecimiento del salario mínimo.
-          Usa un rendimiento bruto del {(annualReturnRate * 100).toFixed(1)}% con una comisión del {(annualFeeRate * 100).toFixed(1)}%, resultando en un {((annualReturnRate - annualFeeRate) * 100).toFixed(1)}% neto anual.
+          Aporte mensual necesario para recibir exactamente 1x el salario mínimo proyectado al retiro,
+          usando {(annualReturnRate * 100).toFixed(1)}% bruto · {(annualFeeRate * 100).toFixed(1)}% comisión → {((annualReturnRate - annualFeeRate) * 100).toFixed(1)}% neto anual.
         </p>
       </div>
 
@@ -103,19 +105,21 @@ export default function RequiredContributionSection({
           targetSalario={slow.projectedValue}
           requiredContribution={requiredSlow}
           currentContribution={currentMonthlyContribution}
+          highlight={selectedSalarioScenario === "slow"}
         />
         <Row
           label={moderate.label}
           targetSalario={moderate.projectedValue}
           requiredContribution={requiredModerate}
           currentContribution={currentMonthlyContribution}
-          highlight
+          highlight={selectedSalarioScenario === "moderate"}
         />
         <Row
           label={fast.label}
           targetSalario={fast.projectedValue}
           requiredContribution={requiredFast}
           currentContribution={currentMonthlyContribution}
+          highlight={selectedSalarioScenario === "fast"}
         />
       </div>
 

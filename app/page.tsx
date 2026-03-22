@@ -7,6 +7,7 @@ import FundGrowthChart from "@/components/FundGrowthChart";
 import FutureSalarioSection from "@/components/FutureSalarioSection";
 import MathSection from "@/components/MathSection";
 import RequiredContributionSection from "@/components/RequiredContributionSection";
+import ScenarioSelector, { type FundScenario, type SalarioScenario } from "@/components/ScenarioSelector";
 import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
 import { projectSalarioMinimoScenarios } from "@/lib/salarioMinimo";
 import salarioData from "@/data/salario-minimo.json";
@@ -14,8 +15,18 @@ import salarioData from "@/data/salario-minimo.json";
 const SCENARIO_SPREAD = 0.03;
 const CURRENT_YEAR = 2025;
 
+function SectionCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-5">
+      {children}
+    </div>
+  );
+}
+
 export default function Home() {
   const [inputs, setInputs] = useState<CalculatorInputs>(DEFAULTS);
+  const [fundScenario, setFundScenario] = useState<FundScenario>("base");
+  const [salarioScenario, setSalarioScenario] = useState<SalarioScenario>("moderate");
 
   const isValid =
     inputs.retirementAge > inputs.currentAge &&
@@ -63,6 +74,21 @@ export default function Home() {
     return projectSalarioMinimoScenarios(salarioData.data, retirementYear);
   }, [isValid, retirementYear]);
 
+  // Effective gross return rate for the selected fund scenario
+  const selectedFundReturnRate = useMemo(() => {
+    const gross = inputs.annualReturnRate / 100;
+    if (fundScenario === "pessimistic") return Math.max(0, gross - SCENARIO_SPREAD);
+    if (fundScenario === "optimistic") return gross + SCENARIO_SPREAD;
+    return gross;
+  }, [inputs.annualReturnRate, fundScenario]);
+
+  // Monthly payout for the selected fund scenario
+  const selectedMonthlyPayout = scenarios
+    ? scenarios[fundScenario].monthlyPayout
+    : 0;
+
+  const hasResults = isValid && scenarios !== null;
+
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8">
@@ -70,8 +96,10 @@ export default function Home() {
         <p className="text-gray-500 mt-1">Paraguay. Proyección basada en capitalización individual.</p>
       </div>
 
-      <div className="flex flex-col gap-6">
-        <CalculatorForm values={inputs} onChange={setInputs} />
+      <div className="flex flex-col gap-5">
+        <SectionCard>
+          <CalculatorForm values={inputs} onChange={setInputs} />
+        </SectionCard>
 
         {!isValid && (
           <p className="text-sm text-red-600">
@@ -79,38 +107,58 @@ export default function Home() {
           </p>
         )}
 
+        {hasResults && (
+          <ScenarioSelector
+            fundScenario={fundScenario}
+            onFundScenario={setFundScenario}
+            salarioScenario={salarioScenario}
+            onSalarioScenario={setSalarioScenario}
+          />
+        )}
+
         {scenarios && (
-          <ResultsDisplay
-            scenarios={scenarios}
-            currentSalaryMinimo={inputs.currentSalary}
-            spread={SCENARIO_SPREAD}
-            currentAge={inputs.currentAge}
-            retirementAge={inputs.retirementAge}
-          />
+          <SectionCard>
+            <ResultsDisplay
+              scenarios={scenarios}
+              currentSalaryMinimo={inputs.currentSalary}
+              spread={SCENARIO_SPREAD}
+              currentAge={inputs.currentAge}
+              retirementAge={inputs.retirementAge}
+              selectedScenario={fundScenario}
+            />
+          </SectionCard>
         )}
 
         {scenarios && salarioScenarios && (
-          <FutureSalarioSection
-            scenarios={salarioScenarios}
-            targetYear={retirementYear}
-            monthlyPensionPayout={scenarios.base.monthlyPayout}
-          />
+          <SectionCard>
+            <FutureSalarioSection
+              scenarios={salarioScenarios}
+              targetYear={retirementYear}
+              monthlyPensionPayout={selectedMonthlyPayout}
+              selectedSalarioScenario={salarioScenario}
+            />
+          </SectionCard>
         )}
 
         {scenarios && salarioScenarios && (
-          <RequiredContributionSection
-            annualReturnRate={inputs.annualReturnRate / 100}
-            annualFeeRate={inputs.annualFeeRate / 100}
-            yearsContributing={scenarios.base.yearsContributing}
-            yearsInRetirement={scenarios.base.yearsInRetirement}
-            existingFund={inputs.existingFund}
-            currentMonthlyContribution={inputs.monthlyContribution}
-            salarioScenarios={salarioScenarios}
-          />
+          <SectionCard>
+            <RequiredContributionSection
+              annualReturnRate={selectedFundReturnRate}
+              annualFeeRate={inputs.annualFeeRate / 100}
+              yearsContributing={scenarios.base.yearsContributing}
+              yearsInRetirement={scenarios.base.yearsInRetirement}
+              existingFund={inputs.existingFund}
+              currentMonthlyContribution={inputs.monthlyContribution}
+              salarioScenarios={salarioScenarios}
+              selectedSalarioScenario={salarioScenario}
+            />
+          </SectionCard>
         )}
 
         {growthData.length > 0 && (
-          <FundGrowthChart data={growthData} retirementAge={inputs.retirementAge} />
+          <SectionCard>
+            <FundGrowthChart data={growthData} retirementAge={inputs.retirementAge} />
+          </SectionCard>
         )}
 
         {salarioScenarios && (

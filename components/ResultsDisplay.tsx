@@ -1,6 +1,7 @@
 "use client";
 
 import type { Scenarios } from "@/lib/pension";
+import type { FundScenario } from "@/components/ScenarioSelector";
 
 interface Props {
   scenarios: Scenarios;
@@ -8,6 +9,7 @@ interface Props {
   spread: number;
   currentAge: number;
   retirementAge: number;
+  selectedScenario: FundScenario;
 }
 
 function formatPYG(value: number): string {
@@ -66,16 +68,16 @@ function ScenarioColumn({
   );
 }
 
-export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread, currentAge, retirementAge }: Props) {
+export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread, currentAge, retirementAge, selectedScenario }: Props) {
   const { pessimistic, base, optimistic } = scenarios;
   const { yearsContributing, yearsInRetirement } = base;
 
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-baseline gap-2">
-        <h2 className="text-lg font-semibold">Proyección</h2>
+        <h2 className="text-lg font-semibold">Proyección de tu fondo</h2>
         <span className="text-sm text-gray-400">
-          {yearsContributing} años restantes de aporte (de los {currentAge} a los {retirementAge}), {yearsInRetirement} años de retiro. Spread: ±{(spread * 100).toFixed(0)}pts.
+          {yearsContributing} años de aporte (de los {currentAge} a los {retirementAge}), {yearsInRetirement} años de retiro · spread ±{(spread * 100).toFixed(0)}pp
         </span>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -87,6 +89,7 @@ export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread,
           totalReceived={pessimistic.monthlyPayout * yearsInRetirement * 12}
           payoutInSalarios={pessimistic.monthlyPayout / currentSalaryMinimo}
           yearsInRetirement={yearsInRetirement}
+          highlight={selectedScenario === "pessimistic"}
         />
         <ScenarioColumn
           label="Esperado"
@@ -96,7 +99,7 @@ export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread,
           totalReceived={base.monthlyPayout * yearsInRetirement * 12}
           payoutInSalarios={base.monthlyPayout / currentSalaryMinimo}
           yearsInRetirement={yearsInRetirement}
-          highlight
+          highlight={selectedScenario === "base"}
         />
         <ScenarioColumn
           label="Optimista"
@@ -106,6 +109,7 @@ export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread,
           totalReceived={optimistic.monthlyPayout * yearsInRetirement * 12}
           payoutInSalarios={optimistic.monthlyPayout / currentSalaryMinimo}
           yearsInRetirement={yearsInRetirement}
+          highlight={selectedScenario === "optimistic"}
         />
       </div>
     </div>
