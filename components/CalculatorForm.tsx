@@ -11,9 +11,9 @@ export interface CalculatorInputs {
   annualFeeRate: number;
 }
 
-// Salario minimo legal vigente 2025, segun Decreto N 2.133/2025 del MJT
+// Salario mínimo legal vigente 2025, según Decreto N° 2.133/2025 del MJT
 export const SALARIO_MINIMO_2025 = 2_550_307;
-export const SALARIO_MINIMO_SOURCE = "Decreto N 2.133/2025 del Ministerio de Justicia y Trabajo";
+export const SALARIO_MINIMO_SOURCE = "Decreto N° 2.133/2025 del Ministerio de Justicia y Trabajo";
 
 const DEFAULTS: CalculatorInputs = {
   currentAge: 30,
@@ -74,19 +74,19 @@ export default function CalculatorForm({ values, onChange }: Props) {
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold mb-4">Datos</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <NumberField label="Edad actual" name="currentAge" min={18} max={80} values={values} onChange={onChange} suffix="anos" />
-        <NumberField label="Edad de jubilacion" name="retirementAge" min={55} max={90} values={values} onChange={onChange} suffix="anos" />
-        <NumberField label="Expectativa de vida" name="lifeExpectancy" min={60} max={120} values={values} onChange={onChange} suffix="anos" />
+        <NumberField label="Edad actual" name="currentAge" min={18} max={80} values={values} onChange={onChange} suffix="años" />
+        <NumberField label="Edad de jubilación" name="retirementAge" min={55} max={90} values={values} onChange={onChange} suffix="años" />
+        <NumberField label="Expectativa de vida" name="lifeExpectancy" min={60} max={120} values={values} onChange={onChange} suffix="años" />
         <NumberField label="Aporte mensual" name="monthlyContribution" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
         <NumberField label="Saldo actual en la caja" name="existingFund" min={0} max={1_000_000_000} step={500_000} values={values} onChange={onChange} suffix="PYG" />
         <div className="flex flex-col gap-1 sm:col-span-2">
-          <NumberField label="Salario minimo de referencia" name="currentSalary" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
+          <NumberField label="Salario mínimo de referencia" name="currentSalary" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
           <p className="text-xs text-gray-400">
-            Fuente: {SALARIO_MINIMO_SOURCE}. Usado para expresar la renta como multiplo del salario minimo.
+            Fuente: {SALARIO_MINIMO_SOURCE}. Usado para expresar la renta como múltiplo del salario mínimo.
           </p>
         </div>
         <NumberField label="Rendimiento anual del fondo" name="annualReturnRate" min={0} max={30} step={0.1} values={values} onChange={onChange} suffix="%" />
-        <NumberField label="Comision anual de administracion" name="annualFeeRate" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="%" />
+        <NumberField label="Comisión anual de administración" name="annualFeeRate" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="%" />
       </div>
     </div>
   );

@@ -49,7 +49,7 @@ export default function FundGrowthChart({ data, retirementAge }: Props) {
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <h2 className="text-lg font-semibold mb-1">Crecimiento del fondo</h2>
       <p className="text-sm text-gray-500 mb-4">
-        Fondo acumulado por edad hasta el retiro a los {retirementAge} anos (3 escenarios)
+        Fondo acumulado por edad hasta el retiro a los {retirementAge} años (3 escenarios)
       </p>
       <ResponsiveContainer width="100%" height={280}>
         <AreaChart data={data} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>

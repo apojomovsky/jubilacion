@@ -6,7 +6,7 @@ import ResultsDisplay from "@/components/ResultsDisplay";
 import FundGrowthChart from "@/components/FundGrowthChart";
 import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
 
-const SCENARIO_SPREAD = 0.03; // ±3 percentage points on annual return rate
+const SCENARIO_SPREAD = 0.03; // ±3 puntos porcentuales sobre el rendimiento anual
 
 export default function Home() {
   const [inputs, setInputs] = useState<CalculatorInputs>(DEFAULTS);
@@ -53,8 +53,8 @@ export default function Home() {
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold">Calculadora de Jubilacion Privada</h1>
-        <p className="text-gray-500 mt-1">Paraguay. Proyeccion basada en capitalizacion individual.</p>
+        <h1 className="text-2xl font-bold">Calculadora de Jubilación Privada</h1>
+        <p className="text-gray-500 mt-1">Paraguay. Proyección basada en capitalización individual.</p>
       </div>
 
       <div className="flex flex-col gap-6">
@@ -62,12 +62,18 @@ export default function Home() {
 
         {!isValid && (
           <p className="text-sm text-red-600">
-            Verifica las edades: la edad de jubilacion debe ser mayor a la actual, y la expectativa de vida mayor a la jubilacion.
+            Verificá las edades: la edad de jubilación debe ser mayor a la actual, y la expectativa de vida mayor a la jubilación.
           </p>
         )}
 
         {scenarios && (
-          <ResultsDisplay scenarios={scenarios} currentSalaryMinimo={inputs.currentSalary} spread={SCENARIO_SPREAD} />
+          <ResultsDisplay
+            scenarios={scenarios}
+            currentSalaryMinimo={inputs.currentSalary}
+            spread={SCENARIO_SPREAD}
+            currentAge={inputs.currentAge}
+            retirementAge={inputs.retirementAge}
+          />
         )}
 
         {growthData.length > 0 && (
@@ -75,7 +81,7 @@ export default function Home() {
         )}
 
         <p className="text-xs text-gray-400">
-          Proyeccion en valores nominales. No considera ajuste por inflacion aun. El modelo de inflacion real se agregara proximamente.
+          Proyección en valores nominales. No considera ajuste por inflación aún. El modelo de inflación real se agregará próximamente.
         </p>
       </div>
     </main>
