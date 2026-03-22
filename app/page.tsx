@@ -6,6 +6,7 @@ import ResultsDisplay from "@/components/ResultsDisplay";
 import FundGrowthChart from "@/components/FundGrowthChart";
 import FutureSalarioSection from "@/components/FutureSalarioSection";
 import MathSection from "@/components/MathSection";
+import RequiredContributionSection from "@/components/RequiredContributionSection";
 import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
 import { projectSalarioMinimoScenarios } from "@/lib/salarioMinimo";
 import salarioData from "@/data/salario-minimo.json";
@@ -93,6 +94,18 @@ export default function Home() {
             scenarios={salarioScenarios}
             targetYear={retirementYear}
             monthlyPensionPayout={scenarios.base.monthlyPayout}
+          />
+        )}
+
+        {scenarios && salarioScenarios && (
+          <RequiredContributionSection
+            annualReturnRate={inputs.annualReturnRate / 100}
+            annualFeeRate={inputs.annualFeeRate / 100}
+            yearsContributing={scenarios.base.yearsContributing}
+            yearsInRetirement={scenarios.base.yearsInRetirement}
+            existingFund={inputs.existingFund}
+            currentMonthlyContribution={inputs.monthlyContribution}
+            salarioScenarios={salarioScenarios}
           />
         )}
 
