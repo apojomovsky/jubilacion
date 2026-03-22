@@ -8,6 +8,8 @@ import FutureSalarioSection from "@/components/FutureSalarioSection";
 import MathSection from "@/components/MathSection";
 import RequiredContributionSection from "@/components/RequiredContributionSection";
 import type { FundScenario, SalarioScenario } from "@/components/ScenarioSelector";
+import GrowingContributionSection from "@/components/GrowingContributionSection";
+import SourcesSection from "@/components/SourcesSection";
 import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
 import { projectSalarioMinimoScenarios } from "@/lib/salarioMinimo";
 import salarioData from "@/data/salario-minimo.json";
@@ -156,6 +158,20 @@ export default function Home() {
           </SectionCard>
         )}
 
+        {scenarios && salarioScenarios && (
+          <SectionCard>
+            <GrowingContributionSection
+              initialMonthlyContribution={inputs.monthlyContribution}
+              annualReturnRate={selectedFundReturnRate}
+              annualFeeRate={inputs.annualFeeRate / 100}
+              yearsContributing={scenarios.base.yearsContributing}
+              yearsInRetirement={scenarios.base.yearsInRetirement}
+              existingFund={inputs.existingFund}
+              salarioMinimoCagrRate={salarioScenarios.moderate.annualGrowthRate}
+            />
+          </SectionCard>
+        )}
+
         {salarioScenarios && (
           <MathSection
             historicalData={salarioData.data}
@@ -163,6 +179,10 @@ export default function Home() {
             targetYear={retirementYear}
           />
         )}
+
+        <SectionCard>
+          <SourcesSection />
+        </SectionCard>
       </div>
     </main>
   );

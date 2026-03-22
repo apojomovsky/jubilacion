@@ -1,5 +1,6 @@
 import {
   calculateAccumulatedFund,
+  calculateAccumulatedFundWithGrowingContributions,
   calculateMonthlyPayout,
   projectPension,
   projectScenarios,
@@ -249,5 +250,78 @@ describe("calculateRequiredContribution", () => {
     const low = calculateRequiredContribution({ ...params, targetMonthlyPayout: 1_000_000 });
     const high = calculateRequiredContribution({ ...params, targetMonthlyPayout: 5_000_000 });
     expect(high).toBeGreaterThan(low);
+  });
+});
+
+describe("calculateAccumulatedFundWithGrowingContributions", () => {
+  const base = {
+    initialMonthlyContribution: 1_000_000,
+    annualReturnRate: 0.08,
+    annualFeeRate: 0.01,
+    years: 20,
+    existingFund: 0,
+  };
+
+  it("equals calculateAccumulatedFund when growth rate is 0", () => {
+    const growing = calculateAccumulatedFundWithGrowingContributions({
+      ...base,
+      annualContributionGrowthRate: 0,
+    });
+    const fixed = calculateAccumulatedFund({
+      monthlyContribution: base.initialMonthlyContribution,
+      annualReturnRate: base.annualReturnRate,
+      annualFeeRate: base.annualFeeRate,
+      years: base.years,
+      existingFund: 0,
+    });
+    expect(growing).toBeCloseTo(fixed, -3); // within 1000 PYG
+  });
+
+  it("produces a larger fund when contributions grow", () => {
+    const fixed = calculateAccumulatedFundWithGrowingContributions({
+      ...base,
+      annualContributionGrowthRate: 0,
+    });
+    const growing = calculateAccumulatedFundWithGrowingContributions({
+      ...base,
+      annualContributionGrowthRate: 0.05,
+    });
+    expect(growing).toBeGreaterThan(fixed);
+  });
+
+  it("higher growth rate produces a larger fund", () => {
+    const low = calculateAccumulatedFundWithGrowingContributions({
+      ...base,
+      annualContributionGrowthRate: 0.02,
+    });
+    const high = calculateAccumulatedFundWithGrowingContributions({
+      ...base,
+      annualContributionGrowthRate: 0.06,
+    });
+    expect(high).toBeGreaterThan(low);
+  });
+
+  it("existing fund compounds independently of contribution growth", () => {
+    const withExisting = calculateAccumulatedFundWithGrowingContributions({
+      ...base,
+      annualContributionGrowthRate: 0.04,
+      existingFund: 50_000_000,
+    });
+    const withoutExisting = calculateAccumulatedFundWithGrowingContributions({
+      ...base,
+      annualContributionGrowthRate: 0.04,
+      existingFund: 0,
+    });
+    expect(withExisting).toBeGreaterThan(withoutExisting);
+  });
+
+  it("returns existingFund when years is 0", () => {
+    const result = calculateAccumulatedFundWithGrowingContributions({
+      ...base,
+      annualContributionGrowthRate: 0.05,
+      years: 0,
+      existingFund: 10_000_000,
+    });
+    expect(result).toBe(10_000_000);
   });
 });

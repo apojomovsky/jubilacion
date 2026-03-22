@@ -205,6 +205,59 @@ export function calculateRequiredContribution({
   return neededFV * r / (Math.pow(1 + r, n) - 1);
 }
 
+export interface GrowingContributionParams {
+  initialMonthlyContribution: number;
+  annualContributionGrowthRate: number; // e.g. 0.045 for 4.5%/yr
+  annualReturnRate: number;
+  annualFeeRate: number;
+  years: number;
+  existingFund?: number;
+}
+
+/**
+ * Future value of a growing annuity: contributions increase at annualContributionGrowthRate per year.
+ *
+ * FV_contributions = PMT * [(1+r)^n - (1+g)^n] / (r - g)   when r ≠ g
+ * FV_contributions = PMT * n * (1+r)^(n-1)                   when r ≈ g
+ *
+ * where r = monthly net return rate, g = monthly contribution growth rate,
+ *       n = total months, PMT = initial monthly contribution.
+ */
+export function calculateAccumulatedFundWithGrowingContributions({
+  initialMonthlyContribution,
+  annualContributionGrowthRate,
+  annualReturnRate,
+  annualFeeRate,
+  years,
+  existingFund = 0,
+}: GrowingContributionParams): number {
+  if (years === 0) return existingFund;
+
+  const netAnnualRate = annualReturnRate - annualFeeRate;
+  const n = years * 12;
+  const r = netAnnualRate / 12;
+  const g = Math.pow(1 + annualContributionGrowthRate, 1 / 12) - 1;
+
+  let contributionsFV: number;
+  if (Math.abs(r - g) < 1e-10) {
+    contributionsFV = initialMonthlyContribution * n * Math.pow(1 + r, n - 1);
+  } else if (netAnnualRate === 0 && annualContributionGrowthRate === 0) {
+    contributionsFV = initialMonthlyContribution * n;
+  } else {
+    contributionsFV =
+      initialMonthlyContribution *
+      (Math.pow(1 + r, n) - Math.pow(1 + g, n)) /
+      (r - g);
+  }
+
+  const existingFV =
+    netAnnualRate === 0
+      ? existingFund
+      : existingFund * Math.pow(1 + r, n);
+
+  return contributionsFV + existingFV;
+}
+
 /**
  * Full pension projection given contribution and age inputs.
  */
