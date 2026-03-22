@@ -1,0 +1,81 @@
+"use client";
+
+export interface CalculatorInputs {
+  currentAge: number;
+  retirementAge: number;
+  lifeExpectancy: number;
+  monthlyContribution: number;
+  currentSalary: number;
+  annualReturnRate: number;
+  annualFeeRate: number;
+}
+
+const DEFAULTS: CalculatorInputs = {
+  currentAge: 30,
+  retirementAge: 60,
+  lifeExpectancy: 80,
+  monthlyContribution: 500_000,
+  currentSalary: 2_550_307, // approx salario minimo 2025
+  annualReturnRate: 8,
+  annualFeeRate: 1.5,
+};
+
+interface Props {
+  values: CalculatorInputs;
+  onChange: (values: CalculatorInputs) => void;
+}
+
+interface FieldProps {
+  label: string;
+  name: keyof CalculatorInputs;
+  min: number;
+  max: number;
+  step?: number;
+  suffix?: string;
+  values: CalculatorInputs;
+  onChange: (values: CalculatorInputs) => void;
+}
+
+function NumberField({ label, name, min, max, step = 1, suffix, values, onChange }: FieldProps) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-sm font-medium text-gray-700" htmlFor={name}>
+        {label}
+      </label>
+      <div className="flex items-center gap-2">
+        <input
+          id={name}
+          type="number"
+          min={min}
+          max={max}
+          step={step}
+          value={values[name]}
+          onChange={(e) =>
+            onChange({ ...values, [name]: Number(e.target.value) })
+          }
+          className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+        />
+        {suffix && <span className="text-sm text-gray-500 whitespace-nowrap">{suffix}</span>}
+      </div>
+    </div>
+  );
+}
+
+export { DEFAULTS };
+
+export default function CalculatorForm({ values, onChange }: Props) {
+  return (
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <h2 className="text-lg font-semibold mb-4">Datos</h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <NumberField label="Edad actual" name="currentAge" min={18} max={80} values={values} onChange={onChange} suffix="anos" />
+        <NumberField label="Edad de jubilacion" name="retirementAge" min={55} max={90} values={values} onChange={onChange} suffix="anos" />
+        <NumberField label="Expectativa de vida" name="lifeExpectancy" min={60} max={120} values={values} onChange={onChange} suffix="anos" />
+        <NumberField label="Aporte mensual" name="monthlyContribution" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
+        <NumberField label="Salario actual" name="currentSalary" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
+        <NumberField label="Rendimiento anual del fondo" name="annualReturnRate" min={0} max={30} step={0.1} values={values} onChange={onChange} suffix="%" />
+        <NumberField label="Comision anual de administracion" name="annualFeeRate" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="%" />
+      </div>
+    </div>
+  );
+}
