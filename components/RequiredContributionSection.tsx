@@ -38,19 +38,19 @@ function Row({ label, targetSalario, requiredContribution, currentContribution, 
         <p className="text-xs text-gray-400">Sal. mín. proyectado: {PYG.format(targetSalario)}</p>
       </div>
       <div>
-        <p className="text-xs text-gray-400">Aporte necesario</p>
-        <p className="font-semibold">{covered ? "—" : PYG.format(requiredContribution)}</p>
-      </div>
-      <div>
         <p className="text-xs text-gray-400">Tu aporte actual</p>
         <p className="font-semibold">{PYG.format(currentContribution)}</p>
       </div>
       <div>
+        <p className="text-xs text-gray-400">Aporte necesario para 1x</p>
+        <p className="font-semibold">{covered ? "Ya cubierto" : PYG.format(requiredContribution)}</p>
+      </div>
+      <div>
         <p className="text-xs text-gray-400">Diferencia</p>
         {covered ? (
-          <p className="font-semibold text-green-600">Ya cubierto</p>
+          <p className="font-semibold text-green-600">✓</p>
         ) : (
-          <p className="font-semibold text-red-500">+{PYG.format(gap)} más/mes</p>
+          <p className="font-semibold text-red-500">+{PYG.format(gap)}/mes</p>
         )}
       </div>
     </div>
@@ -87,15 +87,15 @@ export default function RequiredContributionSection({
         <p className="text-sm text-gray-500 mt-1">
           Para recibir exactamente 1x el salario mínimo proyectado al momento de tu jubilación,
           este es el aporte mensual necesario según cada escenario de crecimiento del salario mínimo.
-          Usa el rendimiento del fondo que configuraste ({((annualReturnRate) * 100).toFixed(1)}% anual neto de comisión).
+          Usa un rendimiento bruto del {(annualReturnRate * 100).toFixed(1)}% con una comisión del {(annualFeeRate * 100).toFixed(1)}%, resultando en un {((annualReturnRate - annualFeeRate) * 100).toFixed(1)}% neto anual.
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-4 gap-3 px-4 text-xs text-gray-400 font-medium uppercase tracking-wide">
           <span>Escenario salario mínimo</span>
-          <span>Aporte necesario</span>
           <span>Tu aporte actual</span>
+          <span>Aporte necesario para 1x</span>
           <span>Diferencia</span>
         </div>
         <Row
