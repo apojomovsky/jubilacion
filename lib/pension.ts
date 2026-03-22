@@ -158,6 +158,53 @@ export function projectScenarios(
   };
 }
 
+export interface RequiredContributionParams {
+  targetMonthlyPayout: number;
+  annualReturnRate: number;
+  annualFeeRate: number;
+  yearsContributing: number;
+  yearsInRetirement: number;
+  existingFund?: number;
+}
+
+/**
+ * Solves for the monthly contribution required to reach a target monthly payout at retirement.
+ *
+ * Derivation:
+ *   targetFund = targetMonthlyPayout * yearsInRetirement * 12
+ *   existingFV = existingFund * (1 + r)^n          (existing balance compounds to retirement)
+ *   neededFV   = targetFund - existingFV
+ *   if neededFV <= 0: existing fund already covers target, return 0
+ *   otherwise:
+ *   contribution = neededFV * r / ((1 + r)^n - 1)  (inverse of annuity FV formula)
+ *
+ * where r = (annualReturnRate - annualFeeRate) / 12, n = yearsContributing * 12
+ */
+export function calculateRequiredContribution({
+  targetMonthlyPayout,
+  annualReturnRate,
+  annualFeeRate,
+  yearsContributing,
+  yearsInRetirement,
+  existingFund = 0,
+}: RequiredContributionParams): number {
+  const targetFund = targetMonthlyPayout * yearsInRetirement * 12;
+  const netAnnualRate = annualReturnRate - annualFeeRate;
+  const n = yearsContributing * 12;
+  const r = netAnnualRate / 12;
+
+  const existingFV = netAnnualRate === 0
+    ? existingFund
+    : existingFund * Math.pow(1 + r, n);
+
+  const neededFV = targetFund - existingFV;
+  if (neededFV <= 0) return 0;
+
+  if (netAnnualRate === 0) return neededFV / n;
+
+  return neededFV * r / (Math.pow(1 + r, n) - 1);
+}
+
 /**
  * Full pension projection given contribution and age inputs.
  */

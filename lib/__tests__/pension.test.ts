@@ -3,6 +3,7 @@ import {
   calculateMonthlyPayout,
   projectPension,
   projectScenarios,
+  calculateRequiredContribution,
 } from "@/lib/pension";
 
 describe("calculateAccumulatedFund", () => {
@@ -204,5 +205,49 @@ describe("projectScenarios", () => {
     const lowReturn = { ...base, annualReturnRate: 0.02 };
     const result = projectScenarios(lowReturn, 0.05);
     expect(result.pessimistic.accumulatedFund).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe("calculateRequiredContribution", () => {
+  const params = {
+    targetMonthlyPayout: 3_000_000,
+    annualReturnRate: 0.08,
+    annualFeeRate: 0.01,
+    yearsContributing: 30,
+    yearsInRetirement: 20,
+    existingFund: 0,
+  };
+
+  it("returns a contribution that, when used in projectPension, yields the target payout", () => {
+    const required = calculateRequiredContribution(params);
+    const fund = calculateAccumulatedFund({
+      monthlyContribution: required,
+      annualReturnRate: params.annualReturnRate,
+      annualFeeRate: params.annualFeeRate,
+      years: params.yearsContributing,
+      existingFund: 0,
+    });
+    const payout = calculateMonthlyPayout({ fund, retirementYears: params.yearsInRetirement });
+    expect(payout).toBeCloseTo(params.targetMonthlyPayout, 0);
+  });
+
+  it("returns a lower required contribution when an existing fund is provided", () => {
+    const withoutExisting = calculateRequiredContribution(params);
+    const withExisting = calculateRequiredContribution({ ...params, existingFund: 50_000_000 });
+    expect(withExisting).toBeLessThan(withoutExisting);
+  });
+
+  it("returns 0 when existing fund already covers the target", () => {
+    const required = calculateRequiredContribution({
+      ...params,
+      existingFund: 1_000_000_000, // huge existing fund
+    });
+    expect(required).toBe(0);
+  });
+
+  it("returns a higher required contribution for a larger target payout", () => {
+    const low = calculateRequiredContribution({ ...params, targetMonthlyPayout: 1_000_000 });
+    const high = calculateRequiredContribution({ ...params, targetMonthlyPayout: 5_000_000 });
+    expect(high).toBeGreaterThan(low);
   });
 });
