@@ -1,0 +1,33 @@
+{
+  "source": "impuestospy.com / MTESS Paraguay",
+  "notes": "Valor mensual en guaraníes (PYG). Años sin decreto propio usan el valor vigente del año anterior más próximo.",
+  "data": [
+    { "year": 1992, "monthly_pyg": 269460 },
+    { "year": 1993, "monthly_pyg": 300000 },
+    { "year": 1994, "monthly_pyg": 379500 },
+    { "year": 1995, "monthly_pyg": 436425 },
+    { "year": 1996, "monthly_pyg": 480069 },
+    { "year": 1997, "monthly_pyg": 528076 },
+    { "year": 1998, "monthly_pyg": 591445 },
+    { "year": 2000, "monthly_pyg": 680162 },
+    { "year": 2001, "monthly_pyg": 782186 },
+    { "year": 2002, "monthly_pyg": 876048 },
+    { "year": 2003, "monthly_pyg": 972413 },
+    { "year": 2005, "monthly_pyg": 1089103 },
+    { "year": 2006, "monthly_pyg": 1219795 },
+    { "year": 2007, "monthly_pyg": 1341775 },
+    { "year": 2009, "monthly_pyg": 1408864 },
+    { "year": 2010, "monthly_pyg": 1507484 },
+    { "year": 2011, "monthly_pyg": 1658232 },
+    { "year": 2014, "monthly_pyg": 1824055 },
+    { "year": 2016, "monthly_pyg": 1964507 },
+    { "year": 2017, "monthly_pyg": 2041123 },
+    { "year": 2018, "monthly_pyg": 2112262 },
+    { "year": 2019, "monthly_pyg": 2192839 },
+    { "year": 2021, "monthly_pyg": 2289324 },
+    { "year": 2022, "monthly_pyg": 2550307 },
+    { "year": 2023, "monthly_pyg": 2680373 },
+    { "year": 2024, "monthly_pyg": 2798309 },
+    { "year": 2025, "monthly_pyg": 2899048 }
+  ]
+}
