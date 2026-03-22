@@ -10,6 +10,7 @@ const SOURCES: Source[] = [
   {
     name: "MTESS Paraguay",
     description: "Ministerio de Trabajo, Empleo y Seguridad Social — resoluciones de salario mínimo.",
+    url: "https://www.trabajo.gov.py",
   },
   {
     name: "impuestospy.com",
