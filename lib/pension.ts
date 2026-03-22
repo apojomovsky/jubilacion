@@ -3,6 +3,7 @@ export interface AccumulatedFundParams {
   annualReturnRate: number;
   annualFeeRate: number;
   years: number;
+  existingFund?: number;
 }
 
 export interface MonthlyPayoutParams {
@@ -17,6 +18,7 @@ export interface ProjectPensionParams {
   currentAge: number;
   retirementAge: number;
   lifeExpectancy: number;
+  existingFund?: number;
 }
 
 export interface ProjectPensionResult {
@@ -36,18 +38,25 @@ export function calculateAccumulatedFund({
   annualReturnRate,
   annualFeeRate,
   years,
+  existingFund = 0,
 }: AccumulatedFundParams): number {
-  if (years === 0) return 0;
+  if (years === 0) return existingFund;
 
   const netAnnualRate = annualReturnRate - annualFeeRate;
   const n = years * 12;
-
-  if (netAnnualRate === 0) {
-    return monthlyContribution * n;
-  }
-
   const r = netAnnualRate / 12;
-  return monthlyContribution * ((Math.pow(1 + r, n) - 1) / r);
+
+  const contributionsFV =
+    netAnnualRate === 0
+      ? monthlyContribution * n
+      : monthlyContribution * ((Math.pow(1 + r, n) - 1) / r);
+
+  const existingFV =
+    netAnnualRate === 0
+      ? existingFund
+      : existingFund * Math.pow(1 + r, n);
+
+  return contributionsFV + existingFV;
 }
 
 /**
@@ -75,6 +84,7 @@ export function buildFundGrowthSeries({
   annualFeeRate,
   currentAge,
   retirementAge,
+  existingFund = 0,
 }: Omit<ProjectPensionParams, "lifeExpectancy">): FundGrowthPoint[] {
   const points: FundGrowthPoint[] = [];
   for (let age = currentAge; age <= retirementAge; age++) {
@@ -84,6 +94,7 @@ export function buildFundGrowthSeries({
       annualReturnRate,
       annualFeeRate,
       years,
+      existingFund,
     });
     points.push({ age, fund });
   }
@@ -100,6 +111,7 @@ export function projectPension({
   currentAge,
   retirementAge,
   lifeExpectancy,
+  existingFund = 0,
 }: ProjectPensionParams): ProjectPensionResult {
   if (retirementAge <= currentAge) {
     throw new Error("retirementAge must be greater than currentAge");
@@ -116,6 +128,7 @@ export function projectPension({
     annualReturnRate,
     annualFeeRate,
     years: yearsContributing,
+    existingFund,
   });
 
   const monthlyPayout = calculateMonthlyPayout({

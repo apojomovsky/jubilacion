@@ -47,6 +47,36 @@ describe("calculateAccumulatedFund", () => {
     expect(result).toBe(0);
   });
 
+  it("compounds an existing balance alongside new contributions", () => {
+    const r = 0.08 / 12;
+    const n = 120;
+    const existingFund = 10_000_000;
+    const result = calculateAccumulatedFund({
+      monthlyContribution: 1_000_000,
+      annualReturnRate: 0.08,
+      annualFeeRate: 0,
+      years: 10,
+      existingFund,
+    });
+    const expectedContributions = 1_000_000 * ((Math.pow(1 + r, n) - 1) / r);
+    const expectedExisting = existingFund * Math.pow(1 + r, n);
+    expect(result).toBeCloseTo(expectedContributions + expectedExisting, 0);
+  });
+
+  it("existing fund alone grows correctly with no new contributions", () => {
+    const r = 0.06 / 12;
+    const n = 60;
+    const existingFund = 5_000_000;
+    const result = calculateAccumulatedFund({
+      monthlyContribution: 0,
+      annualReturnRate: 0.06,
+      annualFeeRate: 0,
+      years: 5,
+      existingFund,
+    });
+    expect(result).toBeCloseTo(existingFund * Math.pow(1 + r, n), 0);
+  });
+
   it("returns principal only when return and fee are both 0", () => {
     const result = calculateAccumulatedFund({
       monthlyContribution: 500_000,
@@ -85,6 +115,28 @@ describe("projectPension", () => {
     expect(result.monthlyPayout).toBeGreaterThan(0);
     expect(result.yearsContributing).toBe(30);
     expect(result.yearsInRetirement).toBe(20);
+  });
+
+  it("gives a higher fund when an existing balance is provided", () => {
+    const base = projectPension({
+      monthlyContribution: 1_000_000,
+      annualReturnRate: 0.08,
+      annualFeeRate: 0.01,
+      currentAge: 30,
+      retirementAge: 60,
+      lifeExpectancy: 80,
+    });
+    const withExisting = projectPension({
+      monthlyContribution: 1_000_000,
+      annualReturnRate: 0.08,
+      annualFeeRate: 0.01,
+      currentAge: 30,
+      retirementAge: 60,
+      lifeExpectancy: 80,
+      existingFund: 50_000_000,
+    });
+    expect(withExisting.accumulatedFund).toBeGreaterThan(base.accumulatedFund);
+    expect(withExisting.monthlyPayout).toBeGreaterThan(base.monthlyPayout);
   });
 
   it("throws if retirementAge <= currentAge", () => {
