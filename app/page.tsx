@@ -7,7 +7,7 @@ import FundGrowthChart from "@/components/FundGrowthChart";
 import FutureSalarioSection from "@/components/FutureSalarioSection";
 import MathSection from "@/components/MathSection";
 import RequiredContributionSection from "@/components/RequiredContributionSection";
-import ScenarioSelector, { type FundScenario, type SalarioScenario } from "@/components/ScenarioSelector";
+import type { FundScenario, SalarioScenario } from "@/components/ScenarioSelector";
 import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
 import { projectSalarioMinimoScenarios } from "@/lib/salarioMinimo";
 import salarioData from "@/data/salario-minimo.json";
@@ -87,8 +87,6 @@ export default function Home() {
     ? scenarios[fundScenario].monthlyPayout
     : 0;
 
-  const hasResults = isValid && scenarios !== null;
-
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-8">
@@ -107,15 +105,6 @@ export default function Home() {
           </p>
         )}
 
-        {hasResults && (
-          <ScenarioSelector
-            fundScenario={fundScenario}
-            onFundScenario={setFundScenario}
-            salarioScenario={salarioScenario}
-            onSalarioScenario={setSalarioScenario}
-          />
-        )}
-
         {scenarios && (
           <SectionCard>
             <ResultsDisplay
@@ -123,6 +112,17 @@ export default function Home() {
               currentSalaryMinimo={inputs.currentSalary}
               spread={SCENARIO_SPREAD}
               currentAge={inputs.currentAge}
+              retirementAge={inputs.retirementAge}
+              selectedScenario={fundScenario}
+              onSelectScenario={setFundScenario}
+            />
+          </SectionCard>
+        )}
+
+        {growthData.length > 0 && (
+          <SectionCard>
+            <FundGrowthChart
+              data={growthData}
               retirementAge={inputs.retirementAge}
               selectedScenario={fundScenario}
             />
@@ -136,6 +136,7 @@ export default function Home() {
               targetYear={retirementYear}
               monthlyPensionPayout={selectedMonthlyPayout}
               selectedSalarioScenario={salarioScenario}
+              onSelectSalarioScenario={setSalarioScenario}
             />
           </SectionCard>
         )}
@@ -152,12 +153,6 @@ export default function Home() {
               salarioScenarios={salarioScenarios}
               selectedSalarioScenario={salarioScenario}
             />
-          </SectionCard>
-        )}
-
-        {growthData.length > 0 && (
-          <SectionCard>
-            <FundGrowthChart data={growthData} retirementAge={inputs.retirementAge} />
           </SectionCard>
         )}
 

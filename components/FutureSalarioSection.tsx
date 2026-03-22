@@ -8,6 +8,7 @@ interface Props {
   targetYear: number;
   monthlyPensionPayout: number; // payout for the selected fund scenario, nominal PYG
   selectedSalarioScenario: SalarioScenario;
+  onSelectSalarioScenario: (s: SalarioScenario) => void;
 }
 
 const PYG = new Intl.NumberFormat("es-PY", {
@@ -25,15 +26,29 @@ interface ScenarioRowProps {
   growthRate: number;
   projectedSalario: number;
   monthlyPayout: number;
-  highlight?: boolean;
+  selected: boolean;
+  onClick: () => void;
 }
 
-function ScenarioRow({ label, growthRate, projectedSalario, monthlyPayout, highlight }: ScenarioRowProps) {
+function ScenarioRow({ label, growthRate, projectedSalario, monthlyPayout, selected, onClick }: ScenarioRowProps) {
   const multiple = monthlyPayout / projectedSalario;
   return (
-    <div className={`grid grid-cols-4 gap-3 rounded-lg border px-4 py-3 text-sm ${highlight ? "border-blue-300 bg-blue-50" : "border-gray-100 bg-white"}`}>
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => e.key === "Enter" && onClick()}
+      className={`grid grid-cols-4 gap-3 rounded-lg border px-4 py-3 text-sm cursor-pointer transition-all select-none ${
+        selected
+          ? "border-blue-300 bg-blue-50 shadow-sm ring-2 ring-blue-200 ring-offset-1"
+          : "border-gray-100 bg-white hover:border-blue-200 hover:shadow-sm"
+      }`}
+    >
       <div>
-        <p className={`font-medium ${highlight ? "text-blue-700" : "text-gray-700"}`}>{label}</p>
+        <p className={`font-medium ${selected ? "text-blue-700" : "text-gray-700"}`}>
+          {label}
+          {selected && <span className="ml-1.5 text-blue-400">◉</span>}
+        </p>
         <p className="text-xs text-gray-400">{pct(growthRate)} anual</p>
       </div>
       <div>
@@ -54,7 +69,7 @@ function ScenarioRow({ label, growthRate, projectedSalario, monthlyPayout, highl
   );
 }
 
-export default function FutureSalarioSection({ scenarios, targetYear, monthlyPensionPayout, selectedSalarioScenario }: Props) {
+export default function FutureSalarioSection({ scenarios, targetYear, monthlyPensionPayout, selectedSalarioScenario, onSelectSalarioScenario }: Props) {
   const { slow, moderate, fast } = scenarios;
 
   return (
@@ -64,9 +79,9 @@ export default function FutureSalarioSection({ scenarios, targetYear, monthlyPen
         <p className="text-sm text-gray-500 mt-1">
           Basado en el historial del salario mínimo entre {moderate.fromYear} y {moderate.toYear}{" "}
           ({moderate.dataPointCount} datos, fuente: MTESS / impuestospy.com), el crecimiento anual promedio fue del{" "}
-          <strong>{pct(moderate.annualGrowthRate)}</strong>. Aplicando ese ritmo y variantes, estimamos que en {targetYear}{" "}
-          el salario mínimo rondará:
+          <strong>{pct(moderate.annualGrowthRate)}</strong>. Aplicando ese ritmo y variantes, el salario mínimo en {targetYear} rondará:
         </p>
+        <p className="text-xs text-gray-400 mt-0.5">Hacé clic en un escenario para seleccionarlo.</p>
       </div>
 
       <div className="flex flex-col gap-2">
@@ -81,21 +96,24 @@ export default function FutureSalarioSection({ scenarios, targetYear, monthlyPen
           growthRate={slow.annualGrowthRate}
           projectedSalario={slow.projectedValue}
           monthlyPayout={monthlyPensionPayout}
-          highlight={selectedSalarioScenario === "slow"}
+          selected={selectedSalarioScenario === "slow"}
+          onClick={() => onSelectSalarioScenario("slow")}
         />
         <ScenarioRow
           label={moderate.label}
           growthRate={moderate.annualGrowthRate}
           projectedSalario={moderate.projectedValue}
           monthlyPayout={monthlyPensionPayout}
-          highlight={selectedSalarioScenario === "moderate"}
+          selected={selectedSalarioScenario === "moderate"}
+          onClick={() => onSelectSalarioScenario("moderate")}
         />
         <ScenarioRow
           label={fast.label}
           growthRate={fast.annualGrowthRate}
           projectedSalario={fast.projectedValue}
           monthlyPayout={monthlyPensionPayout}
-          highlight={selectedSalarioScenario === "fast"}
+          selected={selectedSalarioScenario === "fast"}
+          onClick={() => onSelectSalarioScenario("fast")}
         />
       </div>
 

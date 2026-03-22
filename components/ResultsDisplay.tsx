@@ -10,6 +10,7 @@ interface Props {
   currentAge: number;
   retirementAge: number;
   selectedScenario: FundScenario;
+  onSelectScenario: (s: FundScenario) => void;
 }
 
 function formatPYG(value: number): string {
@@ -28,7 +29,8 @@ interface ScenarioColumnProps {
   totalReceived: number;
   payoutInSalarios: number;
   yearsInRetirement: number;
-  highlight?: boolean;
+  selected: boolean;
+  onClick: () => void;
 }
 
 function ScenarioColumn({
@@ -39,13 +41,27 @@ function ScenarioColumn({
   totalReceived,
   payoutInSalarios,
   yearsInRetirement,
-  highlight,
+  selected,
+  onClick,
 }: ScenarioColumnProps) {
   return (
-    <div className={`flex flex-col gap-3 rounded-lg border p-4 ${highlight ? "border-blue-400 bg-blue-50" : "border-gray-200 bg-white"}`}>
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => e.key === "Enter" && onClick()}
+      className={`flex flex-col gap-3 rounded-lg border p-4 cursor-pointer transition-all select-none ${
+        selected
+          ? "border-blue-400 bg-blue-50 shadow-md ring-2 ring-blue-300 ring-offset-1"
+          : "border-gray-200 bg-white hover:border-blue-200 hover:shadow-sm"
+      }`}
+    >
       <div className="flex items-center justify-between">
-        <span className={`text-sm font-semibold ${highlight ? "text-blue-700" : "text-gray-600"}`}>{label}</span>
-        <span className="text-xs text-gray-400">{(returnRate * 100).toFixed(1)}% rendimiento neto</span>
+        <span className={`text-sm font-semibold ${selected ? "text-blue-700" : "text-gray-600"}`}>
+          {label}
+          {selected && <span className="ml-1.5 text-blue-400">◉</span>}
+        </span>
+        <span className="text-xs text-gray-400">{(returnRate * 100).toFixed(1)}% neto</span>
       </div>
       <div>
         <p className="text-xs text-gray-500">Fondo al retiro</p>
@@ -58,7 +74,7 @@ function ScenarioColumn({
       <div>
         <p className="text-xs text-gray-500">Renta vs. salario mínimo hoy</p>
         <p className="text-base font-medium">{payoutInSalarios.toFixed(2)}x</p>
-        <p className="text-xs text-gray-400">Nominal, sin ajuste por inflación</p>
+        <p className="text-xs text-gray-400">Nominal, sin ajuste</p>
       </div>
       <div>
         <p className="text-xs text-gray-500">Total a recibir ({yearsInRetirement} años)</p>
@@ -68,17 +84,20 @@ function ScenarioColumn({
   );
 }
 
-export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread, currentAge, retirementAge, selectedScenario }: Props) {
+export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread, currentAge, retirementAge, selectedScenario, onSelectScenario }: Props) {
   const { pessimistic, base, optimistic } = scenarios;
   const { yearsContributing, yearsInRetirement } = base;
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-baseline gap-2">
-        <h2 className="text-lg font-semibold">Proyección de tu fondo</h2>
-        <span className="text-sm text-gray-400">
-          {yearsContributing} años de aporte (de los {currentAge} a los {retirementAge}), {yearsInRetirement} años de retiro · spread ±{(spread * 100).toFixed(0)}pp
-        </span>
+      <div>
+        <div className="flex items-baseline gap-2">
+          <h2 className="text-lg font-semibold">Proyección de tu fondo</h2>
+          <span className="text-sm text-gray-400">
+            {yearsContributing} años de aporte (de los {currentAge} a los {retirementAge}) · {yearsInRetirement} años de retiro · spread ±{(spread * 100).toFixed(0)}pp
+          </span>
+        </div>
+        <p className="text-xs text-gray-400 mt-0.5">Hacé clic en un escenario para seleccionarlo — el gráfico y las secciones de abajo se actualizan.</p>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <ScenarioColumn
@@ -89,7 +108,8 @@ export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread,
           totalReceived={pessimistic.monthlyPayout * yearsInRetirement * 12}
           payoutInSalarios={pessimistic.monthlyPayout / currentSalaryMinimo}
           yearsInRetirement={yearsInRetirement}
-          highlight={selectedScenario === "pessimistic"}
+          selected={selectedScenario === "pessimistic"}
+          onClick={() => onSelectScenario("pessimistic")}
         />
         <ScenarioColumn
           label="Esperado"
@@ -99,7 +119,8 @@ export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread,
           totalReceived={base.monthlyPayout * yearsInRetirement * 12}
           payoutInSalarios={base.monthlyPayout / currentSalaryMinimo}
           yearsInRetirement={yearsInRetirement}
-          highlight={selectedScenario === "base"}
+          selected={selectedScenario === "base"}
+          onClick={() => onSelectScenario("base")}
         />
         <ScenarioColumn
           label="Optimista"
@@ -109,7 +130,8 @@ export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread,
           totalReceived={optimistic.monthlyPayout * yearsInRetirement * 12}
           payoutInSalarios={optimistic.monthlyPayout / currentSalaryMinimo}
           yearsInRetirement={yearsInRetirement}
-          highlight={selectedScenario === "optimistic"}
+          selected={selectedScenario === "optimistic"}
+          onClick={() => onSelectScenario("optimistic")}
         />
       </div>
     </div>
