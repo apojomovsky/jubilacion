@@ -42,9 +42,9 @@ const SOURCES: Source[] = [
 export default function SourcesSection() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-        <p className="text-sm font-semibold text-amber-800 mb-1">Aviso importante</p>
-        <p className="text-sm text-amber-700">
+      <div className="rounded-xl border border-amber-800 bg-amber-950 p-4">
+        <p className="text-sm font-semibold text-amber-300 mb-1">Aviso importante</p>
+        <p className="text-sm text-amber-400">
           Esta herramienta es exclusivamente orientativa y <strong>no constituye asesoramiento financiero, previsional ni de ningún tipo</strong>.
           Los valores calculados son estimaciones basadas en modelos matemáticos y datos históricos que <strong>no garantizan resultados futuros</strong>.
           Las proyecciones dependen de supuestos que pueden no materializarse: rendimientos pasados no predicen rendimientos futuros,
@@ -54,29 +54,29 @@ export default function SourcesSection() {
       </div>
 
       <div>
-        <h2 className="text-base font-semibold text-gray-700 mb-3">Fuentes de datos</h2>
+        <h2 className="text-base font-semibold text-gray-300 mb-3">Fuentes de datos</h2>
         <div className="flex flex-col gap-2">
           {SOURCES.map((s) => (
             <div key={s.name} className="flex gap-3 text-sm">
-              <span className="text-gray-400 mt-0.5">·</span>
+              <span className="text-gray-600 mt-0.5">·</span>
               <div>
-                <span className="font-medium text-gray-700">
+                <span className="font-medium text-gray-200">
                   {s.url ? (
-                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-700">
+                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-400">
                       {s.name}
                     </a>
                   ) : (
                     s.name
                   )}
                 </span>
-                <span className="text-gray-500"> — {s.description}</span>
+                <span className="text-gray-500 font-normal"> — {s.description}</span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-600">
         Código fuente disponible y auditado. Los cálculos siguen fórmulas estándar de valor futuro de anualidades (fijas y crecientes)
         y CAGR (tasa de crecimiento anual compuesta). Ver sección "Modelo matemático" para detalles.
       </p>

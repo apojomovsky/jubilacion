@@ -19,7 +19,7 @@ const CURRENT_YEAR = 2025;
 
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white shadow-sm p-5">
+    <div className="rounded-xl border border-gray-700 bg-gray-900 shadow-none p-5">
       {children}
     </div>
   );

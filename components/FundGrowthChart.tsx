@@ -31,8 +31,8 @@ import { formatPYG } from "@/lib/format";
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: number }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white border border-gray-200 rounded p-2 text-sm shadow">
-      <p className="font-medium mb-1">Edad {label}</p>
+    <div className="bg-gray-800 border border-gray-700 rounded p-2 text-sm shadow text-gray-100">
+      <p className="font-medium mb-1 text-gray-300">Edad {label}</p>
       {payload.map((p) => (
         <p key={p.name} style={{ color: p.color }}>{p.name}: {formatPYG(p.value)}</p>
       ))}
@@ -70,8 +70,8 @@ export default function FundGrowthChart({ data, retirementAge, selectedScenario 
 
   return (
     <div className="flex flex-col gap-1">
-      <h2 className="text-lg font-semibold">Crecimiento del fondo</h2>
-      <p className="text-sm text-gray-500">
+      <h2 className="text-lg font-semibold text-gray-100">Crecimiento del fondo</h2>
+      <p className="text-sm text-gray-400">
         Fondo acumulado por edad hasta el retiro a los {retirementAge} años · escenario seleccionado resaltado
       </p>
       <div className="mt-3">
@@ -91,9 +91,9 @@ export default function FundGrowthChart({ data, retirementAge, selectedScenario 
                 <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-            <XAxis dataKey="age" tick={{ fontSize: 12 }} label={{ value: "Edad", position: "insideBottomRight", offset: -8, fontSize: 12 }} />
-            <YAxis tickFormatter={formatBillions} tick={{ fontSize: 12 }} width={52} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+            <XAxis dataKey="age" tick={{ fontSize: 12, fill: "#6b7280" }} label={{ value: "Edad", position: "insideBottomRight", offset: -8, fontSize: 12, fill: "#6b7280" }} />
+            <YAxis tickFormatter={formatBillions} tick={{ fontSize: 12, fill: "#6b7280" }} width={52} />
             <Tooltip content={<CustomTooltip />} />
             <Legend formatter={(value) => LABELS[value] ?? value} />
             <Area type="monotone" {...areaProps("pessimistic", "#f97316", "4 2")} />

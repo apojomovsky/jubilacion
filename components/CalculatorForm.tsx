@@ -47,7 +47,7 @@ interface FieldProps {
 function NumberField({ label, name, min, max, step = 1, suffix, values, onChange }: FieldProps) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700" htmlFor={name}>
+      <label className="text-sm font-medium text-gray-300" htmlFor={name}>
         {label}
       </label>
       <div className="flex items-center gap-2">
@@ -61,7 +61,7 @@ function NumberField({ label, name, min, max, step = 1, suffix, values, onChange
           onChange={(e) =>
             onChange({ ...values, [name]: Number(e.target.value) })
           }
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          className="w-full rounded border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-gray-100 focus:border-blue-500 focus:outline-none"
         />
         {suffix && <span className="text-sm text-gray-500 whitespace-nowrap">{suffix}</span>}
       </div>
@@ -81,7 +81,7 @@ function PYGField({ label, name, values, onChange }: Omit<FieldProps, "min" | "m
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700" htmlFor={name}>
+      <label className="text-sm font-medium text-gray-300" htmlFor={name}>
         {label}
       </label>
       <div className="flex items-center gap-2">
@@ -100,7 +100,7 @@ function PYGField({ label, name, values, onChange }: Omit<FieldProps, "min" | "m
             onChange({ ...values, [name]: isNaN(n) ? 0 : n });
             setEditing(false);
           }}
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          className="w-full rounded border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-gray-100 focus:border-blue-500 focus:outline-none"
         />
         <span className="text-sm text-gray-500 whitespace-nowrap">₲</span>
       </div>
@@ -112,8 +112,8 @@ export { DEFAULTS };
 
 export default function CalculatorForm({ values, onChange }: Props) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-6">
-      <h2 className="text-lg font-semibold mb-4">Datos</h2>
+    <div className="bg-gray-900 rounded-lg border border-gray-700 p-6">
+      <h2 className="text-lg font-semibold text-gray-100 mb-4">Datos</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <NumberField label="Edad actual" name="currentAge" min={18} max={80} values={values} onChange={onChange} suffix="años" />
         <NumberField label="Edad de jubilación" name="retirementAge" min={55} max={90} values={values} onChange={onChange} suffix="años" />
@@ -122,7 +122,7 @@ export default function CalculatorForm({ values, onChange }: Props) {
         <PYGField label="Saldo actual en la caja" name="existingFund" values={values} onChange={onChange} />
         <div className="flex flex-col gap-1 sm:col-span-2">
           <PYGField label="Salario mínimo de referencia" name="currentSalary" values={values} onChange={onChange} />
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             Fuente: {SALARIO_MINIMO_SOURCE}. Usado para expresar la renta como múltiplo del salario mínimo.
           </p>
         </div>

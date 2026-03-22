@@ -34,29 +34,29 @@ function ScenarioRow({ label, growthRate, projectedSalario, monthlyPayout, selec
       tabIndex={0}
       onClick={onClick}
       onKeyDown={(e) => e.key === "Enter" && onClick()}
-      className={`grid grid-cols-4 gap-3 rounded-lg border px-4 py-3 text-sm cursor-pointer transition-all select-none ${
+      className={`grid grid-cols-4 gap-3 rounded-lg border px-4 py-3 text-sm cursor-pointer transition-all select-none min-w-[600px] ${
         selected
-          ? "border-blue-300 bg-blue-50 shadow-sm ring-2 ring-blue-200 ring-offset-1"
-          : "border-gray-100 bg-white hover:border-blue-200 hover:shadow-sm"
+          ? "bg-blue-950 border-blue-700 ring-2 ring-blue-800 ring-offset-1 ring-offset-gray-900"
+          : "bg-gray-800 border-gray-800 hover:border-blue-700 hover:shadow-sm"
       }`}
     >
       <div>
-        <p className={`font-medium ${selected ? "text-blue-700" : "text-gray-700"}`}>
+        <p className={`font-medium ${selected ? "text-blue-400" : "text-gray-300"}`}>
           {label}
           {selected && <span className="ml-1.5 text-blue-400">◉</span>}
         </p>
-        <p className="text-xs text-gray-400">{pct(growthRate)} anual</p>
+        <p className="text-xs text-gray-500">{pct(growthRate)} anual</p>
       </div>
       <div>
-        <p className="text-xs text-gray-400">Salario mínimo proyectado</p>
+        <p className="text-xs text-gray-500">Salario mínimo proyectado</p>
         <p className="font-semibold">{formatPYG(projectedSalario)}</p>
       </div>
       <div>
-        <p className="text-xs text-gray-400">Tu renta mensual</p>
+        <p className="text-xs text-gray-500">Tu renta mensual</p>
         <p className="font-semibold">{formatPYG(monthlyPayout)}</p>
       </div>
       <div>
-        <p className="text-xs text-gray-400">Equivalencia</p>
+        <p className="text-xs text-gray-500">Equivalencia</p>
         <p className={`text-lg font-bold ${multiple >= 1 ? "text-green-600" : multiple >= 0.5 ? "text-yellow-600" : "text-red-500"}`}>
           {multiple.toFixed(2)}x
         </p>
@@ -71,17 +71,18 @@ export default function FutureSalarioSection({ scenarios, targetYear, monthlyPen
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <h2 className="text-lg font-semibold">Poder adquisitivo al retiro</h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <h2 className="text-lg font-semibold text-gray-100">Poder adquisitivo al retiro</h2>
+        <p className="text-sm text-gray-400 mt-1">
           Basado en el historial del salario mínimo entre {moderate.fromYear} y {moderate.toYear}{" "}
           ({moderate.dataPointCount} datos, fuente: MTESS / impuestospy.com), el crecimiento anual promedio fue del{" "}
           <strong>{pct(moderate.annualGrowthRate)}</strong>. Aplicando ese ritmo y variantes, el salario mínimo en {targetYear} rondará:
         </p>
-        <p className="text-xs text-gray-400 mt-0.5">Hacé clic en un escenario para seleccionarlo.</p>
+        <p className="text-xs text-gray-600 mt-0.5">Hacé clic en un escenario para seleccionarlo.</p>
       </div>
 
+      <div className="overflow-x-auto">
       <div className="flex flex-col gap-2">
-        <div className="grid grid-cols-4 gap-3 px-4 text-xs text-gray-400 font-medium uppercase tracking-wide">
+        <div className="grid grid-cols-4 gap-3 px-4 text-xs text-gray-600 font-medium uppercase tracking-wide min-w-[600px]">
           <span>Escenario sal. mínimo</span>
           <span>Sal. mínimo en {targetYear}</span>
           <span>Tu renta mensual</span>
@@ -112,8 +113,9 @@ export default function FutureSalarioSection({ scenarios, targetYear, monthlyPen
           onClick={() => onSelectSalarioScenario("fast")}
         />
       </div>
+      </div>
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-gray-600">
         A mayor crecimiento del salario mínimo, menor es el poder adquisitivo relativo de tu jubilación.
         El escenario "Alto" es el desfavorable para el jubilado.
       </p>

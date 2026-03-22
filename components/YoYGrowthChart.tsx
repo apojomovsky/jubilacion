@@ -21,7 +21,7 @@ interface Props {
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: { value: number }[]; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white border border-gray-200 rounded p-2 text-sm shadow">
+    <div className="bg-gray-800 border border-gray-700 rounded p-2 text-sm shadow text-gray-100">
       <p className="font-medium">{label}</p>
       <p>{payload[0].value.toFixed(1)}% de crecimiento</p>
     </div>
@@ -43,15 +43,15 @@ export default function YoYGrowthChart({ historicalData, historicalCAGR }: Props
 
   return (
     <div>
-      <p className="text-sm text-gray-500 mb-3">
+      <p className="text-sm text-gray-400 mb-3">
         Crecimiento año a año del salario mínimo. La línea punteada es el promedio histórico ({avgLine.toFixed(1)}% anual).
         La varianza justifica el uso de escenarios en lugar de una sola proyección.
       </p>
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} margin={{ top: 4, right: 8, left: 8, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-          <XAxis dataKey="year" tick={{ fontSize: 10 }} interval={2} />
-          <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 11 }} width={40} />
+          <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+          <XAxis dataKey="year" tick={{ fontSize: 10, fill: "#6b7280" }} interval={2} />
+          <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 11, fill: "#6b7280" }} width={40} />
           <Tooltip content={<CustomTooltip />} />
           <ReferenceLine y={avgLine} stroke="#3b82f6" strokeDasharray="4 2" label={{ value: `CAGR ${avgLine.toFixed(1)}%`, position: "insideTopRight", fontSize: 11, fill: "#3b82f6" }} />
           <Bar dataKey="rate" name="Crecimiento YoY" radius={[3, 3, 0, 0]}>
