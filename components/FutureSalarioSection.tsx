@@ -11,11 +11,7 @@ interface Props {
   onSelectSalarioScenario: (s: SalarioScenario) => void;
 }
 
-const PYG = new Intl.NumberFormat("es-PY", {
-  style: "currency",
-  currency: "PYG",
-  maximumFractionDigits: 0,
-});
+import { formatPYG } from "@/lib/format";
 
 function pct(rate: number) {
   return `${(rate * 100).toFixed(1)}%`;
@@ -53,11 +49,11 @@ function ScenarioRow({ label, growthRate, projectedSalario, monthlyPayout, selec
       </div>
       <div>
         <p className="text-xs text-gray-400">Salario mínimo proyectado</p>
-        <p className="font-semibold">{PYG.format(projectedSalario)}</p>
+        <p className="font-semibold">{formatPYG(projectedSalario)}</p>
       </div>
       <div>
         <p className="text-xs text-gray-400">Tu renta mensual</p>
-        <p className="font-semibold">{PYG.format(monthlyPayout)}</p>
+        <p className="font-semibold">{formatPYG(monthlyPayout)}</p>
       </div>
       <div>
         <p className="text-xs text-gray-400">Equivalencia</p>

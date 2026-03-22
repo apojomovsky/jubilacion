@@ -12,11 +12,7 @@ interface Props {
   salarioMinimoCagrRate: number; // moderate scenario CAGR for labeling
 }
 
-const PYG = new Intl.NumberFormat("es-PY", {
-  style: "currency",
-  currency: "PYG",
-  maximumFractionDigits: 0,
-});
+import { formatPYG } from "@/lib/format";
 
 function pct(rate: number) {
   return `${(rate * 100).toFixed(1)}%`;
@@ -47,11 +43,11 @@ function Row({ label, sublabel, growthRate, fund, monthlyPayout, multiplier, hig
       </div>
       <div>
         <p className="text-xs text-gray-400">Fondo al retiro</p>
-        <p className="font-semibold">{PYG.format(fund)}</p>
+        <p className="font-semibold">{formatPYG(fund)}</p>
       </div>
       <div>
         <p className="text-xs text-gray-400">Renta mensual</p>
-        <p className="font-semibold">{PYG.format(monthlyPayout)}</p>
+        <p className="font-semibold">{formatPYG(monthlyPayout)}</p>
       </div>
       <div>
         <p className="text-xs text-gray-400">vs. aporte fijo</p>
@@ -107,7 +103,7 @@ export default function GrowingContributionSection({
       <div>
         <h2 className="text-lg font-semibold">¿Qué pasa si aumentás tu aporte cada año?</h2>
         <p className="text-sm text-gray-500 mt-1">
-          Tu aporte inicial es {PYG.format(initialMonthlyContribution)}/mes. Si lo ajustás anualmente
+          Tu aporte inicial es {formatPYG(initialMonthlyContribution)}/mes. Si lo ajustás anualmente
           (por ejemplo, al ritmo de la inflación o del salario mínimo), el fondo acumulado al retiro
           crece significativamente. La tabla compara distintos ritmos de ajuste.
         </p>
@@ -125,7 +121,7 @@ export default function GrowingContributionSection({
           <Row
             key={r.rate}
             label={r.label}
-            sublabel={`Aporte final: ${PYG.format(Math.round(finalContributions[i]))}/mes`}
+            sublabel={`Aporte final: ${formatPYG(Math.round(finalContributions[i]))}/mes`}
             growthRate={r.rate}
             fund={r.fund}
             monthlyPayout={r.payout}

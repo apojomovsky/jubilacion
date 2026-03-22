@@ -15,11 +15,7 @@ interface Props {
   selectedSalarioScenario: SalarioScenario;
 }
 
-const PYG = new Intl.NumberFormat("es-PY", {
-  style: "currency",
-  currency: "PYG",
-  maximumFractionDigits: 0,
-});
+import { formatPYG } from "@/lib/format";
 
 interface RowProps {
   label: string;
@@ -37,22 +33,22 @@ function Row({ label, targetSalario, requiredContribution, currentContribution, 
     <div className={`grid grid-cols-4 gap-3 rounded-lg border px-4 py-3 text-sm items-center ${highlight ? "border-blue-300 bg-blue-50" : "border-gray-100 bg-white"}`}>
       <div>
         <p className={`font-medium ${highlight ? "text-blue-700" : "text-gray-700"}`}>{label}</p>
-        <p className="text-xs text-gray-400">Sal. mín. proyectado: {PYG.format(targetSalario)}</p>
+        <p className="text-xs text-gray-400">Sal. mín. proyectado: {formatPYG(targetSalario)}</p>
       </div>
       <div>
         <p className="text-xs text-gray-400">Tu aporte actual</p>
-        <p className="font-semibold">{PYG.format(currentContribution)}</p>
+        <p className="font-semibold">{formatPYG(currentContribution)}</p>
       </div>
       <div>
         <p className="text-xs text-gray-400">Aporte necesario para 1x</p>
-        <p className="font-semibold">{covered ? "Ya cubierto" : PYG.format(requiredContribution)}</p>
+        <p className="font-semibold">{covered ? "Ya cubierto" : formatPYG(requiredContribution)}</p>
       </div>
       <div>
         <p className="text-xs text-gray-400">Diferencia</p>
         {covered ? (
           <p className="font-semibold text-green-600">✓</p>
         ) : (
-          <p className="font-semibold text-red-500">+{PYG.format(gap)}/mes</p>
+          <p className="font-semibold text-red-500">+{formatPYG(gap)}/mes</p>
         )}
       </div>
     </div>

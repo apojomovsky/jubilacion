@@ -8,34 +8,34 @@ interface Source {
 
 const SOURCES: Source[] = [
   {
-    name: "MTESS Paraguay",
-    description: "Ministerio de Trabajo, Empleo y Seguridad Social — resoluciones de salario mínimo.",
-    url: "https://www.trabajo.gov.py",
+    name: "MTESS Paraguay — Salario Mínimo Legal",
+    description: "Normativa, evolución histórica y cobertura del salario mínimo legal en Paraguay. Sistema de Información del Mercado Laboral (SIMEL).",
+    url: "https://simel.mtess.gov.py/archivos/3324",
   },
   {
-    name: "impuestospy.com",
-    description: "Compilación histórica de salarios mínimos legales vigentes 1992–2025 basada en datos del MTESS.",
+    name: "impuestospy.com — Salarios Mínimos Históricos",
+    description: "Compilación de salarios mínimos legales vigentes 1992–2025 basada en resoluciones del MTESS.",
     url: "https://impuestospy.com/salarios-minimos/",
   },
   {
-    name: "Banco Central del Paraguay (BCP)",
-    description: "Referencia macroeconómica para tasas de inflación e indicadores financieros de Paraguay.",
-    url: "https://www.bcp.gov.py",
+    name: "BCP — Índice de Precios al Consumidor (IPC)",
+    description: "Serie histórica de inflación del Banco Central del Paraguay, utilizada como referencia para el análisis de poder adquisitivo real.",
+    url: "https://www.bcp.gov.py/en/indice-precios-al-consumidor-ipc",
   },
   {
-    name: "economia.com.py",
-    description: "Análisis de poder adquisitivo real del salario mínimo paraguayo 1989–2025 (inflación acumulada 2.005% vs ajustes salariales 1.600%).",
+    name: "economia.com.py — Poder adquisitivo del salario mínimo",
+    description: "Análisis comparativo 1989–2025: inflación acumulada 2.005% vs ajustes salariales 1.600%, resultando en una pérdida real del ~24% en 36 años.",
     url: "https://economia.com.py/trabajadores-paraguayos-pierden-24-de-poder-adquisitivo-en-36-anos-mientras-debate-del-salario-minimo-expone-fallas-del-sistema-de-reajuste/",
   },
   {
-    name: "Superintendencia de Pensiones de Chile",
-    description: "Rentabilidad histórica real de fondos AFP desde julio de 1981 (Fondo C: +7.26% real anual acumulado). Referencia comparativa para sistemas de capitalización individual en Latinoamérica.",
+    name: "Superintendencia de Pensiones de Chile — Rentabilidad de Fondos",
+    description: "Rentabilidad real histórica de fondos AFP desde julio de 1981. Fondo C: +7.26% real anual acumulado. Referencia comparativa para sistemas de capitalización individual en LatAm.",
     url: "https://www.spensiones.cl/apps/rentabilidad/getRentabilidad.php?tiprent=FP",
   },
   {
     name: "OCDE — Pensions at a Glance 2023",
-    description: "Supuesto estándar de crecimiento real de salarios utilizado en proyecciones actuariales de largo plazo: 1.25% anual real.",
-    url: "https://www.oecd.org/publications/oecd-pensions-at-a-glance-19991363.htm",
+    description: "Supuesto estándar de crecimiento real de salarios en proyecciones actuariales: 1.25% anual real. Indicadores de pensiones OCDE y G20.",
+    url: "https://www.oecd-ilibrary.org/finance-and-investment/pensions-at-a-glance-2023_678055dd-en",
   },
 ];
 

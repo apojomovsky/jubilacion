@@ -26,7 +26,7 @@ function formatBillions(value: number): string {
   return String(value);
 }
 
-const PYG = new Intl.NumberFormat("es-PY", { style: "currency", currency: "PYG", maximumFractionDigits: 0 });
+import { formatPYG } from "@/lib/format";
 
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: number }) {
   if (!active || !payload?.length) return null;
@@ -34,7 +34,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
     <div className="bg-white border border-gray-200 rounded p-2 text-sm shadow">
       <p className="font-medium mb-1">Edad {label}</p>
       {payload.map((p) => (
-        <p key={p.name} style={{ color: p.color }}>{p.name}: {PYG.format(p.value)}</p>
+        <p key={p.name} style={{ color: p.color }}>{p.name}: {formatPYG(p.value)}</p>
       ))}
     </div>
   );

@@ -20,11 +20,7 @@ interface Props {
   targetYear: number;
 }
 
-const PYG = new Intl.NumberFormat("es-PY", {
-  style: "currency",
-  currency: "PYG",
-  maximumFractionDigits: 0,
-});
+import { formatPYG } from "@/lib/format";
 
 function formatM(value: number): string {
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
@@ -39,7 +35,7 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
     <div className="bg-white border border-gray-200 rounded p-2 text-sm shadow">
       <p className="font-medium mb-1">{label}</p>
       {items.map((p) => (
-        <p key={p.name} style={{ color: p.color }}>{p.name}: {PYG.format(p.value)}</p>
+        <p key={p.name} style={{ color: p.color }}>{p.name}: {formatPYG(p.value)}</p>
       ))}
     </div>
   );

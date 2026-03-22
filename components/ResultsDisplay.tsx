@@ -13,13 +13,7 @@ interface Props {
   onSelectScenario: (s: FundScenario) => void;
 }
 
-function formatPYG(value: number): string {
-  return new Intl.NumberFormat("es-PY", {
-    style: "currency",
-    currency: "PYG",
-    maximumFractionDigits: 0,
-  }).format(value);
-}
+import { formatPYG } from "@/lib/format";
 
 interface ScenarioColumnProps {
   label: string;
