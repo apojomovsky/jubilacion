@@ -10,12 +10,16 @@ export interface CalculatorInputs {
   annualFeeRate: number;
 }
 
+// Salario minimo legal vigente 2025, segun Decreto N 2.133/2025 del MJT
+export const SALARIO_MINIMO_2025 = 2_550_307;
+export const SALARIO_MINIMO_SOURCE = "Decreto N 2.133/2025 del Ministerio de Justicia y Trabajo";
+
 const DEFAULTS: CalculatorInputs = {
   currentAge: 30,
   retirementAge: 60,
   lifeExpectancy: 80,
   monthlyContribution: 500_000,
-  currentSalary: 2_550_307, // approx salario minimo 2025
+  currentSalary: SALARIO_MINIMO_2025,
   annualReturnRate: 8,
   annualFeeRate: 1.5,
 };
@@ -72,7 +76,12 @@ export default function CalculatorForm({ values, onChange }: Props) {
         <NumberField label="Edad de jubilacion" name="retirementAge" min={55} max={90} values={values} onChange={onChange} suffix="anos" />
         <NumberField label="Expectativa de vida" name="lifeExpectancy" min={60} max={120} values={values} onChange={onChange} suffix="anos" />
         <NumberField label="Aporte mensual" name="monthlyContribution" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
-        <NumberField label="Salario actual" name="currentSalary" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
+        <div className="flex flex-col gap-1 sm:col-span-2">
+          <NumberField label="Salario minimo de referencia" name="currentSalary" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
+          <p className="text-xs text-gray-400">
+            Fuente: {SALARIO_MINIMO_SOURCE}. Usado para expresar la renta como multiplo del salario minimo.
+          </p>
+        </div>
         <NumberField label="Rendimiento anual del fondo" name="annualReturnRate" min={0} max={30} step={0.1} values={values} onChange={onChange} suffix="%" />
         <NumberField label="Comision anual de administracion" name="annualFeeRate" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="%" />
       </div>

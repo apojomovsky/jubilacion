@@ -44,14 +44,14 @@ export default function ResultsDisplay({ result, currentSalaryMinimo }: Props) {
           sub={`Para ${yearsInRetirement} anos de retiro`}
         />
         <StatCard
-          label="Renta en salarios minimos actuales"
+          label="Renta vs. salario minimo hoy"
           value={`${payoutInSalarios.toFixed(2)}x`}
-          sub="Basado en el salario minimo ingresado"
+          sub="En guaranies nominales, sin ajuste por inflacion. El valor real sera menor."
         />
         <StatCard
-          label="Total aportado"
-          value={formatPYG(result.monthlyPayout * yearsInRetirement * 12 / 1)}
-          sub="Estimado de pagos durante el retiro"
+          label="Total a recibir en el retiro"
+          value={formatPYG(monthlyPayout * yearsInRetirement * 12)}
+          sub={`${yearsInRetirement} anos de renta mensual (nominal)`}
         />
       </div>
     </div>
