@@ -4,7 +4,9 @@ import { useState, useMemo } from "react";
 import CalculatorForm, { DEFAULTS, type CalculatorInputs } from "@/components/CalculatorForm";
 import ResultsDisplay from "@/components/ResultsDisplay";
 import FundGrowthChart from "@/components/FundGrowthChart";
-import { projectPension, buildFundGrowthSeries } from "@/lib/pension";
+import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
+
+const SCENARIO_SPREAD = 0.03; // ±3 percentage points on annual return rate
 
 export default function Home() {
   const [inputs, setInputs] = useState<CalculatorInputs>(DEFAULTS);
@@ -13,18 +15,21 @@ export default function Home() {
     inputs.retirementAge > inputs.currentAge &&
     inputs.lifeExpectancy > inputs.retirementAge;
 
-  const result = useMemo(() => {
+  const scenarios = useMemo(() => {
     if (!isValid) return null;
     try {
-      return projectPension({
-        monthlyContribution: inputs.monthlyContribution,
-        annualReturnRate: inputs.annualReturnRate / 100,
-        annualFeeRate: inputs.annualFeeRate / 100,
-        currentAge: inputs.currentAge,
-        retirementAge: inputs.retirementAge,
-        lifeExpectancy: inputs.lifeExpectancy,
-        existingFund: inputs.existingFund,
-      });
+      return projectScenarios(
+        {
+          monthlyContribution: inputs.monthlyContribution,
+          annualReturnRate: inputs.annualReturnRate / 100,
+          annualFeeRate: inputs.annualFeeRate / 100,
+          currentAge: inputs.currentAge,
+          retirementAge: inputs.retirementAge,
+          lifeExpectancy: inputs.lifeExpectancy,
+          existingFund: inputs.existingFund,
+        },
+        SCENARIO_SPREAD
+      );
     } catch {
       return null;
     }
@@ -32,14 +37,17 @@ export default function Home() {
 
   const growthData = useMemo(() => {
     if (!isValid) return [];
-    return buildFundGrowthSeries({
-      monthlyContribution: inputs.monthlyContribution,
-      annualReturnRate: inputs.annualReturnRate / 100,
-      annualFeeRate: inputs.annualFeeRate / 100,
-      currentAge: inputs.currentAge,
-      retirementAge: inputs.retirementAge,
-      existingFund: inputs.existingFund,
-    });
+    return buildScenariosGrowthSeries(
+      {
+        monthlyContribution: inputs.monthlyContribution,
+        annualReturnRate: inputs.annualReturnRate / 100,
+        annualFeeRate: inputs.annualFeeRate / 100,
+        currentAge: inputs.currentAge,
+        retirementAge: inputs.retirementAge,
+        existingFund: inputs.existingFund,
+      },
+      SCENARIO_SPREAD
+    );
   }, [inputs, isValid]);
 
   return (
@@ -58,8 +66,8 @@ export default function Home() {
           </p>
         )}
 
-        {result && (
-          <ResultsDisplay result={result} currentSalaryMinimo={inputs.currentSalary} />
+        {scenarios && (
+          <ResultsDisplay scenarios={scenarios} currentSalaryMinimo={inputs.currentSalary} spread={SCENARIO_SPREAD} />
         )}
 
         {growthData.length > 0 && (

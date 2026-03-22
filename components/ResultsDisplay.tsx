@@ -1,10 +1,11 @@
 "use client";
 
-import type { ProjectPensionResult } from "@/lib/pension";
+import type { Scenarios } from "@/lib/pension";
 
 interface Props {
-  result: ProjectPensionResult;
+  scenarios: Scenarios;
   currentSalaryMinimo: number;
+  spread: number;
 }
 
 function formatPYG(value: number): string {
@@ -15,43 +16,89 @@ function formatPYG(value: number): string {
   }).format(value);
 }
 
-function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
+interface ScenarioColumnProps {
+  label: string;
+  returnRate: number;
+  accumulatedFund: number;
+  monthlyPayout: number;
+  totalReceived: number;
+  payoutInSalarios: number;
+  highlight?: boolean;
+}
+
+function ScenarioColumn({
+  label,
+  returnRate,
+  accumulatedFund,
+  monthlyPayout,
+  totalReceived,
+  payoutInSalarios,
+  highlight,
+}: ScenarioColumnProps) {
   return (
-    <div className="bg-white rounded-lg border border-gray-200 p-4">
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className="text-2xl font-bold mt-1">{value}</p>
-      {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+    <div className={`flex flex-col gap-3 rounded-lg border p-4 ${highlight ? "border-blue-400 bg-blue-50" : "border-gray-200 bg-white"}`}>
+      <div className="flex items-center justify-between">
+        <span className={`text-sm font-semibold ${highlight ? "text-blue-700" : "text-gray-600"}`}>{label}</span>
+        <span className="text-xs text-gray-400">{(returnRate * 100).toFixed(1)}% rendimiento neto</span>
+      </div>
+      <div>
+        <p className="text-xs text-gray-500">Fondo al retiro</p>
+        <p className="text-xl font-bold">{formatPYG(accumulatedFund)}</p>
+      </div>
+      <div>
+        <p className="text-xs text-gray-500">Renta mensual</p>
+        <p className="text-lg font-semibold">{formatPYG(monthlyPayout)}</p>
+      </div>
+      <div>
+        <p className="text-xs text-gray-500">Renta vs. salario minimo hoy</p>
+        <p className="text-base font-medium">{payoutInSalarios.toFixed(2)}x</p>
+        <p className="text-xs text-gray-400">Nominal, sin ajuste por inflacion</p>
+      </div>
+      <div>
+        <p className="text-xs text-gray-500">Total a recibir</p>
+        <p className="text-sm text-gray-700">{formatPYG(totalReceived)}</p>
+      </div>
     </div>
   );
 }
 
-export default function ResultsDisplay({ result, currentSalaryMinimo }: Props) {
-  const { accumulatedFund, monthlyPayout, yearsContributing, yearsInRetirement } = result;
-  const payoutInSalarios = monthlyPayout / currentSalaryMinimo;
+export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread }: Props) {
+  const { pessimistic, base, optimistic } = scenarios;
+  const { yearsContributing, yearsInRetirement } = base;
 
   return (
-    <div className="flex flex-col gap-4">
-      <h2 className="text-lg font-semibold">Proyeccion</h2>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <StatCard
-          label="Fondo acumulado al retiro"
-          value={formatPYG(accumulatedFund)}
-          sub={`Aportando durante ${yearsContributing} anos`}
+    <div className="flex flex-col gap-3">
+      <div className="flex items-baseline gap-2">
+        <h2 className="text-lg font-semibold">Proyeccion</h2>
+        <span className="text-sm text-gray-400">
+          {yearsContributing} anos aportando, {yearsInRetirement} anos de retiro. Spread: ±{(spread * 100).toFixed(0)}pts.
+        </span>
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <ScenarioColumn
+          label="Pesimista"
+          returnRate={pessimistic.annualReturnRate ?? 0}
+          accumulatedFund={pessimistic.accumulatedFund}
+          monthlyPayout={pessimistic.monthlyPayout}
+          totalReceived={pessimistic.monthlyPayout * yearsInRetirement * 12}
+          payoutInSalarios={pessimistic.monthlyPayout / currentSalaryMinimo}
         />
-        <StatCard
-          label="Renta mensual estimada"
-          value={formatPYG(monthlyPayout)}
-          sub={`Para ${yearsInRetirement} anos de retiro`}
+        <ScenarioColumn
+          label="Esperado"
+          returnRate={base.annualReturnRate ?? 0}
+          accumulatedFund={base.accumulatedFund}
+          monthlyPayout={base.monthlyPayout}
+          totalReceived={base.monthlyPayout * yearsInRetirement * 12}
+          payoutInSalarios={base.monthlyPayout / currentSalaryMinimo}
+          highlight
         />
-        <StatCard
-          label="Renta vs. salario minimo hoy"
-          value={`${payoutInSalarios.toFixed(2)}x`}
-          sub="En guaranies nominales, sin ajuste por inflacion. El valor real sera menor."
-        />
-        <StatCard
-          label="Total a recibir en el retiro"
-          value={formatPYG(monthlyPayout * yearsInRetirement * 12)}
-          sub={`${yearsInRetirement} anos de renta mensual (nominal)`}
+        <ScenarioColumn
+          label="Optimista"
+          returnRate={optimistic.annualReturnRate ?? 0}
+          accumulatedFund={optimistic.accumulatedFund}
+          monthlyPayout={optimistic.monthlyPayout}
+          totalReceived={optimistic.monthlyPayout * yearsInRetirement * 12}
+          payoutInSalarios={optimistic.monthlyPayout / currentSalaryMinimo}
         />
       </div>
     </div>

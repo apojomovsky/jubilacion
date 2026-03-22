@@ -26,6 +26,7 @@ export interface ProjectPensionResult {
   monthlyPayout: number;
   yearsContributing: number;
   yearsInRetirement: number;
+  annualReturnRate: number;
 }
 
 /**
@@ -101,6 +102,34 @@ export function buildFundGrowthSeries({
   return points;
 }
 
+export interface ScenarioGrowthPoint {
+  age: number;
+  pessimistic: number;
+  base: number;
+  optimistic: number;
+}
+
+export function buildScenariosGrowthSeries(
+  params: Omit<ProjectPensionParams, "lifeExpectancy">,
+  spread = 0.03
+): ScenarioGrowthPoint[] {
+  const pessimisticRate = Math.max(0, params.annualReturnRate - spread);
+  const optimisticRate = params.annualReturnRate + spread;
+
+  const points: ScenarioGrowthPoint[] = [];
+  for (let age = params.currentAge; age <= params.retirementAge; age++) {
+    const years = age - params.currentAge;
+    const common = { monthlyContribution: params.monthlyContribution, annualFeeRate: params.annualFeeRate, years, existingFund: params.existingFund };
+    points.push({
+      age,
+      pessimistic: calculateAccumulatedFund({ ...common, annualReturnRate: pessimisticRate }),
+      base: calculateAccumulatedFund({ ...common, annualReturnRate: params.annualReturnRate }),
+      optimistic: calculateAccumulatedFund({ ...common, annualReturnRate: optimisticRate }),
+    });
+  }
+  return points;
+}
+
 export interface Scenarios {
   pessimistic: ProjectPensionResult;
   base: ProjectPensionResult;
@@ -169,5 +198,6 @@ export function projectPension({
     monthlyPayout,
     yearsContributing,
     yearsInRetirement,
+    annualReturnRate,
   };
 }
