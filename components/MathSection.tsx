@@ -35,7 +35,7 @@ function ModelCard({ scenarios }: { scenarios: SalarioMinimoScenarios }) {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 text-sm">
         <div className="bg-white rounded border border-gray-200 p-3">
-          <p className="text-xs text-gray-400">Período analizado</p>
+          <p className="text-xs text-gray-400">Período del CAGR</p>
           <p className="font-semibold">{moderate.fromYear}–{moderate.toYear}</p>
         </div>
         <div className="bg-white rounded border border-gray-200 p-3">
@@ -71,6 +71,24 @@ function ModelCard({ scenarios }: { scenarios: SalarioMinimoScenarios }) {
         <p className="text-xs text-gray-400 mt-2">
           A mayor crecimiento del salario mínimo, menor es el poder adquisitivo relativo de tu jubilación.
           El escenario "alto" es el desfavorable para el jubilado.
+        </p>
+      </div>
+
+      <div className="border-t border-gray-200 pt-4">
+        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Nominal vs real: por qué estas cifras no son tan alarmantes como parecen</p>
+        <p className="text-sm text-gray-600">
+          Todos los valores son <strong>nominales</strong>: incluyen inflación futura. El fondo de jubilación también crece en términos nominales
+          (el rendimiento del fondo ya incorpora inflación). Lo que importa es la diferencia real entre ambos.
+        </p>
+        <p className="text-sm text-gray-600 mt-2">
+          Dato histórico: el salario mínimo paraguayo <strong>perdió</strong> aproximadamente un 24% de poder adquisitivo real
+          entre 1989 y 2025 (inflación acumulada 2.005% vs ajustes salariales 1.600%). En términos reales, el salario mínimo
+          ha crecido cerca de 0% o negativo por año, mientras que los fondos de jubilación privada bien gestionados
+          históricamente rinden 3-7% real anual por encima de la inflación.
+          La brecha real suele favorecer al jubilado, aunque no está garantizada.
+        </p>
+        <p className="text-xs text-gray-400 mt-2">
+          Fuente: economia.com.py, Superintendencia de Pensiones de Chile (AFP Fund C: +7.26% real anual desde 1981).
         </p>
       </div>
     </div>

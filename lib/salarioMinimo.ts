@@ -73,10 +73,13 @@ export function projectSalarioMinimo({
 /**
  * Projects three scenarios for the salario mínimo at a future target year.
  *
- * Uses the historical CAGR (full dataset) as the base, then applies a spread:
- * - slow:     baseRate - spread  (salario mínimo grows less than historical)
- * - moderate: baseRate           (salario mínimo follows historical trend)
- * - fast:     baseRate + spread  (salario mínimo grows more than historical)
+ * Uses the CAGR computed from cagrFromYear (default 2010) to the latest data
+ * point as the base rate. Full-history CAGR is avoided because it encodes
+ * high-inflation decades that Paraguay has since left behind.
+ *
+ * - slow:     baseRate - spread  (salario mínimo grows less than recent trend)
+ * - moderate: baseRate           (salario mínimo follows recent trend)
+ * - fast:     baseRate + spread  (salario mínimo grows more than recent trend)
  *
  * Note: a faster-growing salario mínimo means your pension is worth LESS
  * in relative terms, so "fast" is the unfavorable scenario for the pensioner.
@@ -84,16 +87,17 @@ export function projectSalarioMinimo({
 export function projectSalarioMinimoScenarios(
   data: SalarioMinimoDataPoint[],
   targetYear: number,
-  spread = 0.02
+  spread = 0.02,
+  cagrFromYear = 2010
 ): SalarioMinimoScenarios {
   const sorted = [...data].sort((a, b) => a.year - b.year);
-  const first = sorted[0];
   const last = sorted[sorted.length - 1];
 
-  const baseRate = computeCAGR(data);
+  const baseRate = computeCAGR(data, cagrFromYear);
+  const cagrStart = sorted.find((d) => d.year >= cagrFromYear) ?? sorted[0];
   const base = last.monthly_pyg;
   const baseYear = last.year;
-  const dataPointCount = sorted.length;
+  const dataPointCount = sorted.filter((d) => d.year >= cagrStart.year).length;
 
   function makeScenario(
     rate: number,
@@ -109,7 +113,7 @@ export function projectSalarioMinimoScenarios(
       }),
       baseValue: base,
       baseYear,
-      fromYear: first.year,
+      fromYear: cagrStart.year,
       toYear: last.year,
       dataPointCount,
       label,

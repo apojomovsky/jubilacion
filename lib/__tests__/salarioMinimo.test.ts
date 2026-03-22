@@ -97,4 +97,27 @@ describe("projectSalarioMinimoScenarios", () => {
     expect(result.moderate.baseValue).toBe(result.fast.baseValue);
     expect(result.moderate.baseValue).toBe(3_000_000); // latest in SAMPLE_DATA
   });
+
+  it("uses cagrFromYear to compute CAGR from a specific year", () => {
+    // CAGR from 2010–2020: (3_000_000 / 2_000_000)^(1/10) - 1
+    const expected = Math.pow(3_000_000 / 2_000_000, 1 / 10) - 1;
+    const result = projectSalarioMinimoScenarios(SAMPLE_DATA, 2030, 0.02, 2010);
+    expect(result.moderate.annualGrowthRate).toBeCloseTo(expected, 4);
+  });
+
+  it("fromYear in scenario reflects the cagrFromYear start point", () => {
+    const result = projectSalarioMinimoScenarios(SAMPLE_DATA, 2030, 0.02, 2010);
+    expect(result.moderate.fromYear).toBe(2010);
+  });
+
+  it("full-history CAGR differs from recent-period CAGR on real data shape", () => {
+    // With SAMPLE_DATA: full CAGR (2000–2020) vs recent (2010–2020)
+    const fullHistory = projectSalarioMinimoScenarios(SAMPLE_DATA, 2030, 0.02, 2000);
+    const recent = projectSalarioMinimoScenarios(SAMPLE_DATA, 2030, 0.02, 2010);
+    // Both are computable and distinct
+    expect(fullHistory.moderate.annualGrowthRate).not.toBeCloseTo(
+      recent.moderate.annualGrowthRate,
+      4
+    );
+  });
 });
