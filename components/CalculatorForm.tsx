@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 export interface CalculatorInputs {
   currentAge: number;
   retirementAge: number;
@@ -67,6 +69,45 @@ function NumberField({ label, name, min, max, step = 1, suffix, values, onChange
   );
 }
 
+function dotFormat(n: number): string {
+  return n === 0 ? "0" : n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function PYGField({ label, name, values, onChange }: Omit<FieldProps, "min" | "max" | "step" | "suffix">) {
+  const [editing, setEditing] = useState(false);
+  const [raw, setRaw] = useState("");
+
+  const displayValue = editing ? raw : dotFormat(values[name] as number);
+
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-sm font-medium text-gray-700" htmlFor={name}>
+        {label}
+      </label>
+      <div className="flex items-center gap-2">
+        <input
+          id={name}
+          type="text"
+          inputMode="numeric"
+          value={displayValue}
+          onFocus={() => {
+            setRaw(values[name] === 0 ? "" : String(values[name]));
+            setEditing(true);
+          }}
+          onChange={(e) => setRaw(e.target.value.replace(/[^0-9]/g, ""))}
+          onBlur={() => {
+            const n = parseInt(raw, 10);
+            onChange({ ...values, [name]: isNaN(n) ? 0 : n });
+            setEditing(false);
+          }}
+          className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+        />
+        <span className="text-sm text-gray-500 whitespace-nowrap">₲</span>
+      </div>
+    </div>
+  );
+}
+
 export { DEFAULTS };
 
 export default function CalculatorForm({ values, onChange }: Props) {
@@ -77,10 +118,10 @@ export default function CalculatorForm({ values, onChange }: Props) {
         <NumberField label="Edad actual" name="currentAge" min={18} max={80} values={values} onChange={onChange} suffix="años" />
         <NumberField label="Edad de jubilación" name="retirementAge" min={55} max={90} values={values} onChange={onChange} suffix="años" />
         <NumberField label="Expectativa de vida" name="lifeExpectancy" min={60} max={120} values={values} onChange={onChange} suffix="años" />
-        <NumberField label="Aporte mensual" name="monthlyContribution" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
-        <NumberField label="Saldo actual en la caja" name="existingFund" min={0} max={1_000_000_000} step={500_000} values={values} onChange={onChange} suffix="PYG" />
+        <PYGField label="Aporte mensual" name="monthlyContribution" values={values} onChange={onChange} />
+        <PYGField label="Saldo actual en la caja" name="existingFund" values={values} onChange={onChange} />
         <div className="flex flex-col gap-1 sm:col-span-2">
-          <NumberField label="Salario mínimo de referencia" name="currentSalary" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
+          <PYGField label="Salario mínimo de referencia" name="currentSalary" values={values} onChange={onChange} />
           <p className="text-xs text-gray-400">
             Fuente: {SALARIO_MINIMO_SOURCE}. Usado para expresar la renta como múltiplo del salario mínimo.
           </p>
