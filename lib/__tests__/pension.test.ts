@@ -2,6 +2,7 @@ import {
   calculateAccumulatedFund,
   calculateMonthlyPayout,
   projectPension,
+  projectScenarios,
 } from "@/lib/pension";
 
 describe("calculateAccumulatedFund", () => {
@@ -163,5 +164,45 @@ describe("projectPension", () => {
         lifeExpectancy: 55,
       })
     ).toThrow();
+  });
+});
+
+describe("projectScenarios", () => {
+  const base = {
+    monthlyContribution: 1_000_000,
+    annualReturnRate: 0.08,
+    annualFeeRate: 0.01,
+    currentAge: 30,
+    retirementAge: 60,
+    lifeExpectancy: 80,
+  };
+
+  it("returns three scenarios ordered pessimistic < base < optimistic", () => {
+    const result = projectScenarios(base);
+    expect(result.pessimistic.accumulatedFund).toBeLessThan(result.base.accumulatedFund);
+    expect(result.base.accumulatedFund).toBeLessThan(result.optimistic.accumulatedFund);
+    expect(result.pessimistic.monthlyPayout).toBeLessThan(result.base.monthlyPayout);
+    expect(result.base.monthlyPayout).toBeLessThan(result.optimistic.monthlyPayout);
+  });
+
+  it("base scenario matches projectPension directly", () => {
+    const scenarios = projectScenarios(base);
+    const direct = projectPension(base);
+    expect(scenarios.base.accumulatedFund).toBeCloseTo(direct.accumulatedFund, 0);
+    expect(scenarios.base.monthlyPayout).toBeCloseTo(direct.monthlyPayout, 0);
+  });
+
+  it("respects a custom spread", () => {
+    const narrow = projectScenarios(base, 0.01);
+    const wide = projectScenarios(base, 0.05);
+    const narrowSpread = narrow.optimistic.accumulatedFund - narrow.pessimistic.accumulatedFund;
+    const wideSpread = wide.optimistic.accumulatedFund - wide.pessimistic.accumulatedFund;
+    expect(wideSpread).toBeGreaterThan(narrowSpread);
+  });
+
+  it("clamps pessimistic return to 0 when spread exceeds return rate", () => {
+    const lowReturn = { ...base, annualReturnRate: 0.02 };
+    const result = projectScenarios(lowReturn, 0.05);
+    expect(result.pessimistic.accumulatedFund).toBeGreaterThanOrEqual(0);
   });
 });

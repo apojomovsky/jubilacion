@@ -101,6 +101,34 @@ export function buildFundGrowthSeries({
   return points;
 }
 
+export interface Scenarios {
+  pessimistic: ProjectPensionResult;
+  base: ProjectPensionResult;
+  optimistic: ProjectPensionResult;
+}
+
+/**
+ * Runs three projections: base, pessimistic (base - spread), optimistic (base + spread).
+ * Default spread is 3 percentage points on the annual return rate.
+ * Pessimistic return is clamped to 0 to avoid negative projections.
+ */
+export function projectScenarios(
+  params: ProjectPensionParams,
+  spread = 0.03
+): Scenarios {
+  return {
+    pessimistic: projectPension({
+      ...params,
+      annualReturnRate: Math.max(0, params.annualReturnRate - spread),
+    }),
+    base: projectPension(params),
+    optimistic: projectPension({
+      ...params,
+      annualReturnRate: params.annualReturnRate + spread,
+    }),
+  };
+}
+
 /**
  * Full pension projection given contribution and age inputs.
  */
