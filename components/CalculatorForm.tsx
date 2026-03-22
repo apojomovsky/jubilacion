@@ -5,6 +5,7 @@ export interface CalculatorInputs {
   retirementAge: number;
   lifeExpectancy: number;
   monthlyContribution: number;
+  existingFund: number;
   currentSalary: number;
   annualReturnRate: number;
   annualFeeRate: number;
@@ -19,6 +20,7 @@ const DEFAULTS: CalculatorInputs = {
   retirementAge: 60,
   lifeExpectancy: 80,
   monthlyContribution: 500_000,
+  existingFund: 0,
   currentSalary: SALARIO_MINIMO_2025,
   annualReturnRate: 8,
   annualFeeRate: 1.5,
@@ -76,6 +78,7 @@ export default function CalculatorForm({ values, onChange }: Props) {
         <NumberField label="Edad de jubilacion" name="retirementAge" min={55} max={90} values={values} onChange={onChange} suffix="anos" />
         <NumberField label="Expectativa de vida" name="lifeExpectancy" min={60} max={120} values={values} onChange={onChange} suffix="anos" />
         <NumberField label="Aporte mensual" name="monthlyContribution" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
+        <NumberField label="Saldo actual en la caja" name="existingFund" min={0} max={1_000_000_000} step={500_000} values={values} onChange={onChange} suffix="PYG" />
         <div className="flex flex-col gap-1 sm:col-span-2">
           <NumberField label="Salario minimo de referencia" name="currentSalary" min={0} max={100_000_000} step={50_000} values={values} onChange={onChange} suffix="PYG" />
           <p className="text-xs text-gray-400">

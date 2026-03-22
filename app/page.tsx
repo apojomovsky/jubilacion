@@ -23,6 +23,7 @@ export default function Home() {
         currentAge: inputs.currentAge,
         retirementAge: inputs.retirementAge,
         lifeExpectancy: inputs.lifeExpectancy,
+        existingFund: inputs.existingFund,
       });
     } catch {
       return null;
@@ -37,6 +38,7 @@ export default function Home() {
       annualFeeRate: inputs.annualFeeRate / 100,
       currentAge: inputs.currentAge,
       retirementAge: inputs.retirementAge,
+      existingFund: inputs.existingFund,
     });
   }, [inputs, isValid]);
 
