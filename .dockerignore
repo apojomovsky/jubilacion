@@ -1,0 +1,6 @@
+.git
+.beads
+node_modules
+.next
+.env*
+README.md
