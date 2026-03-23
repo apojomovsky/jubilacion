@@ -99,9 +99,12 @@ export default function Home() {
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold">Calculadora de Jubilación Privada</h1>
-        <p className="text-gray-500 mt-1">Paraguay. Proyección basada en capitalización individual.</p>
+      <div className="mb-8 flex items-center gap-4">
+        <img src="/logo.svg" alt="Previsor" className="w-14 h-14 rounded-xl" />
+        <div>
+          <h1 className="text-2xl font-bold">Previsor</h1>
+          <p className="text-gray-500 mt-0.5">Calculadora de jubilación privada · Paraguay</p>
+        </div>
       </div>
 
       <div className="flex flex-col gap-5">

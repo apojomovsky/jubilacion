@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Calculadora de Jubilación Privada - Paraguay",
+  title: "Previsor — Jubilación privada Paraguay",
   description: "Proyectá tu jubilación privada considerando inflación real y salario mínimo de Paraguay.",
 };
 
