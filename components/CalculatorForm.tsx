@@ -11,6 +11,7 @@ export interface CalculatorInputs {
   currentSalary: number;
   annualReturnRate: number;
   annualFeeRate: number;
+  scenarioSpread: number;
 }
 
 // Salario mínimo legal vigente 2025 (vigente desde julio 2025)
@@ -26,6 +27,7 @@ const DEFAULTS: CalculatorInputs = {
   currentSalary: SALARIO_MINIMO_2025,
   annualReturnRate: 8,
   annualFeeRate: 1.5,
+  scenarioSpread: 1.5,
 };
 
 interface Props {
@@ -234,6 +236,7 @@ export default function CalculatorForm({ values, onChange, growthRate, onGrowthR
         </div>
         <NumberField label="Rendimiento anual del fondo" name="annualReturnRate" min={0} max={30} step={0.1} values={values} onChange={onChange} suffix="%" />
         <NumberField label="Comisión anual de administración" name="annualFeeRate" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="%" />
+        <NumberField label="Spread de escenarios" name="scenarioSpread" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="pp" />
         <div className="sm:col-span-2 border-t border-gray-700 pt-4">
           <ContributionGrowthPicker value={growthRate} onChange={onGrowthRateChange} salarioCagrRate={salarioCagrRate} />
         </div>

@@ -14,7 +14,6 @@ import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
 import { projectSalarioMinimoScenarios } from "@/lib/salarioMinimo";
 import salarioData from "@/data/salario-minimo.json";
 
-const SCENARIO_SPREAD = 0.03;
 const CURRENT_YEAR = 2025;
 
 function SectionCard({ children }: { children: React.ReactNode }) {
@@ -51,7 +50,7 @@ export default function Home() {
           existingFund: inputs.existingFund,
           annualContributionGrowthRate: contributionGrowthRate,
         },
-        SCENARIO_SPREAD
+        inputs.scenarioSpread / 100
       );
     } catch {
       return null;
@@ -70,7 +69,7 @@ export default function Home() {
         existingFund: inputs.existingFund,
         annualContributionGrowthRate: contributionGrowthRate,
       },
-      SCENARIO_SPREAD
+      inputs.scenarioSpread / 100
     );
   }, [inputs, isValid, contributionGrowthRate]);
 
@@ -88,8 +87,8 @@ export default function Home() {
   // Effective gross return rate for the selected fund scenario
   const selectedFundReturnRate = useMemo(() => {
     const gross = inputs.annualReturnRate / 100;
-    if (fundScenario === "pessimistic") return Math.max(0, gross - SCENARIO_SPREAD);
-    if (fundScenario === "optimistic") return gross + SCENARIO_SPREAD;
+    if (fundScenario === "pessimistic") return Math.max(0, gross - inputs.scenarioSpread / 100);
+    if (fundScenario === "optimistic") return gross + inputs.scenarioSpread / 100;
     return gross;
   }, [inputs.annualReturnRate, fundScenario]);
 
@@ -127,7 +126,7 @@ export default function Home() {
             <ResultsDisplay
               scenarios={scenarios}
               currentSalaryMinimo={inputs.currentSalary}
-              spread={SCENARIO_SPREAD}
+              spread={inputs.scenarioSpread / 100}
               currentAge={inputs.currentAge}
               retirementAge={inputs.retirementAge}
               selectedScenario={fundScenario}
