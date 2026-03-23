@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240">
+  <rect width="240" height="240" rx="40" fill="#0f172a"/>
+  <!-- Grid lines (subtle) -->
+  <line x1="36" y1="180" x2="204" y2="180" stroke="#1e293b" stroke-width="1.5"/>
+  <line x1="36" y1="148" x2="204" y2="148" stroke="#1e293b" stroke-width="1.5"/>
+  <line x1="36" y1="116" x2="204" y2="116" stroke="#1e293b" stroke-width="1.5"/>
+  <line x1="36" y1="84" x2="204" y2="84" stroke="#1e293b" stroke-width="1.5"/>
+  <!-- Area fill under the line -->
+  <polygon points="36,180 36,155 80,138 124,120 168,90 204,58 204,180" fill="#3b82f6" fill-opacity="0.12"/>
+  <!-- Trend line -->
+  <polyline points="36,155 80,138 124,120 168,90 204,58" fill="none" stroke="#3b82f6" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Dots -->
+  <circle cx="36"  cy="155" r="5" fill="#3b82f6"/>
+  <circle cx="80"  cy="138" r="5" fill="#3b82f6"/>
+  <circle cx="124" cy="120" r="5" fill="#3b82f6"/>
+  <circle cx="168" cy="90"  r="5" fill="#3b82f6"/>
+  <!-- Final dot: green (optimistic endpoint) -->
+  <circle cx="204" cy="58"  r="7" fill="#22c55e"/>
+  <!-- Guaraní symbol bottom-right -->
+  <text x="200" y="218" font-family="Georgia, serif" font-size="22" fill="#334155" text-anchor="end">₲</text>
+</svg>
