@@ -81,7 +81,7 @@ export default function GrowingContributionSection({
   const presets = [
     { rate: 0,                    label: "Nunca lo toco",                            sublabel: "siempre el mismo monto nominal" },
     { rate: 0.03,                  label: "Lo ajusto anualmente al IPC (inflacion)", sublabel: "~3%/año estimado, mantiene su valor real" },
-    { rate: salarioMinimoCagrRate, label: "Lo ajusto al ritmo del salario minimo",   sublabel: `${pct(salarioMinimoCagrRate)}/año (CAGR 2010-hoy)` },
+    { rate: salarioMinimoCagrRate, label: "Lo ajusto al ritmo del salario mínimo",   sublabel: `${pct(salarioMinimoCagrRate)}/año (CAGR 2010-hoy)` },
   ];
 
   const isCustom = !presets.some((p) => Math.abs(p.rate - selectedGrowthRate) < 1e-5) && selectedGrowthRate > 0;
@@ -109,15 +109,15 @@ export default function GrowingContributionSection({
       <div>
         <h2 className="text-lg font-semibold text-gray-100">Impacto del ajuste anual del aporte</h2>
         <p className="text-sm text-gray-400 mt-1">
-          Segun la opcion que elegiste arriba, la tabla muestra como cambia el fondo final y la renta mensual.
-          La columna "vs. fijo" compara cada opcion contra no ajustar nunca el aporte.
+          Según la opción que elegiste arriba, la tabla muestra como cambia el fondo final y la renta mensual.
+          La columna "vs. fijo" compara cada opción contra no ajustar nunca el aporte.
         </p>
       </div>
 
       <div className="overflow-x-auto">
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-5 gap-3 px-4 text-xs text-gray-600 font-medium uppercase tracking-wide min-w-[700px]">
-          <span>Opcion de ajuste</span>
+          <span>Opción de ajuste</span>
           <span>Aumento anual</span>
           <span>Fondo al retiro</span>
           <span>Renta mensual</span>
