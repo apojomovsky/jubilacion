@@ -77,10 +77,10 @@ export default function GrowingContributionSection({
   };
 
   const rates = [
-    { rate: 0,                    label: "Aporte fijo",          sublabel: "sin ajuste" },
-    { rate: 0.03,                  label: "Inflación estimada",   sublabel: "~3%/año" },
-    { rate: 0.045,                 label: "Crecimiento moderado", sublabel: "~4.5%/año" },
-    { rate: salarioMinimoCagrRate, label: "Salario mínimo",       sublabel: `${pct(salarioMinimoCagrRate)}/año (CAGR reciente)` },
+    { rate: 0,                    label: "Nunca lo ajusto",               sublabel: "siempre el mismo monto" },
+    { rate: 0.03,                  label: "Lo subo con la inflacion",      sublabel: "~3%/año, mantengo poder adquisitivo" },
+    { rate: 0.045,                 label: "Lo subo un poco mas",           sublabel: "~4.5%/año, crezco en terminos reales" },
+    { rate: salarioMinimoCagrRate, label: "Lo subo como el salario minimo", sublabel: `${pct(salarioMinimoCagrRate)}/año (CAGR 2010-hoy)` },
   ];
 
   const results = rates.map(({ rate, label, sublabel }) => {
@@ -103,16 +103,16 @@ export default function GrowingContributionSection({
       <div>
         <h2 className="text-lg font-semibold text-gray-100">¿Qué pasa si aumentás tu aporte cada año?</h2>
         <p className="text-sm text-gray-400 mt-1">
-          Tu aporte inicial es {formatPYG(initialMonthlyContribution)}/mes. Si lo ajustás anualmente
-          (por ejemplo, al ritmo de la inflación o del salario mínimo), el fondo acumulado al retiro
-          crece significativamente. La tabla compara distintos ritmos de ajuste.
+          Hoy aportás {formatPYG(initialMonthlyContribution)}/mes. La pregunta es: cada año, ese monto, lo dejás igual o lo aumentas?
+          Si lo aumentas aunque sea un poco, el efecto sobre el fondo final es enorme.
+          La tabla muestra cuanto terminas aportando y que fondo acumulas segun el ritmo de aumento que elijas.
         </p>
       </div>
 
       <div className="overflow-x-auto">
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-5 gap-3 px-4 text-xs text-gray-600 font-medium uppercase tracking-wide min-w-[700px]">
-          <span>Estrategia</span>
+          <span>Que hago con mi aporte cada año</span>
           <span>Aumento anual</span>
           <span>Fondo al retiro</span>
           <span>Renta mensual</span>
