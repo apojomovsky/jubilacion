@@ -56,10 +56,11 @@ function ScenarioRow({ label, growthRate, projectedSalario, monthlyPayout, selec
         <p className="font-semibold">{formatPYG(monthlyPayout)}</p>
       </div>
       <div>
-        <p className="text-xs text-gray-500">Equivalencia</p>
+        <p className="text-xs text-gray-500">Renta / sal. mínimo</p>
         <p className={`text-lg font-bold ${multiple >= 1 ? "text-green-600" : multiple >= 0.5 ? "text-yellow-600" : "text-red-500"}`}>
           {multiple.toFixed(2)}x
         </p>
+        <p className="text-xs text-gray-500">{(multiple * 100).toFixed(0)}% del sal. mín.</p>
       </div>
     </div>
   );
@@ -86,7 +87,7 @@ export default function FutureSalarioSection({ scenarios, targetYear, monthlyPen
           <span>Escenario sal. mínimo</span>
           <span>Sal. mínimo en {targetYear}</span>
           <span>Tu renta mensual</span>
-          <span>Equivalencia</span>
+          <span>Tu renta / sal. mínimo</span>
         </div>
         <ScenarioRow
           label={slow.label}
