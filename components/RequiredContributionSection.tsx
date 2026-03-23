@@ -82,7 +82,7 @@ export default function RequiredContributionSection({
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <h2 className="text-lg font-semibold text-gray-100">¿Cuánto necesitás ahorrar para 1 salario mínimo?</h2>
+        <h2 className="text-lg font-semibold text-gray-100">¿Cuánto necesitás ahorrar para cobrar 1 salario mínimo por mes?</h2>
         <p className="text-sm text-gray-400 mt-1">
           Aporte mensual necesario para recibir exactamente 1x el salario mínimo proyectado al retiro,
           usando {(annualReturnRate * 100).toFixed(1)}% bruto · {(annualFeeRate * 100).toFixed(1)}% comisión → {((annualReturnRate - annualFeeRate) * 100).toFixed(1)}% neto anual.
