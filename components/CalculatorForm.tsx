@@ -52,8 +52,8 @@ function ContributionGrowthPicker({ value, onChange, salarioCagrRate }: PickerPr
   const customId = useId();
   const presets = [
     { rate: 0,               label: "Nunca lo ajusto",   sub: "0%/año" },
-    { rate: 0.03,             label: "Al IPC",            sub: "~3%/año" },
-    { rate: salarioCagrRate, label: "Al sal. mínimo",    sub: `${pct(salarioCagrRate)}/año` },
+    { rate: 0.03,             label: "Al ritmo del IPC",            sub: "~3%/año" },
+    { rate: salarioCagrRate, label: "Al ritmo del sal. mínimo",    sub: `${pct(salarioCagrRate)}/año` },
   ];
   const matchesPreset = presets.some((p) => Math.abs(p.rate - value) < 1e-5);
   const [customStr, setCustomStr] = useState(() =>
