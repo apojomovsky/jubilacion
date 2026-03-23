@@ -11,7 +11,7 @@ import type { FundScenario, SalarioScenario } from "@/components/ScenarioSelecto
 import GrowingContributionSection from "@/components/GrowingContributionSection";
 import ConclusionBanner from "@/components/ConclusionBanner";
 import SourcesSection from "@/components/SourcesSection";
-import { projectScenarios, buildScenariosGrowthSeries, calculateRequiredContribution } from "@/lib/pension";
+import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
 import { projectSalarioMinimoScenarios } from "@/lib/salarioMinimo";
 import salarioData from "@/data/salario-minimo.json";
 
@@ -95,22 +95,17 @@ export default function Home() {
 
   const selectedMonthlyPayout = scenarios ? scenarios[fundScenario].monthlyPayout : 0;
 
-  // Banner calculations: always use base scenario + moderate salary growth
+  // Banner calculations: always use base scenario + moderate salary growth.
+  // Gap uses proportional scaling: payout is linear in initial contribution,
+  // so neededContribution = currentContribution * targetPayout / actualPayout.
   const bannerData = useMemo(() => {
     if (!scenarios || !salarioScenarios) return null;
     const payout = scenarios.base.monthlyPayout;
     const projectedSalario = salarioScenarios.moderate.projectedValue;
     const actualMultiple = payout / projectedSalario;
-    const targetMonthlyPayout = targetMultiplier * projectedSalario;
-    const required = calculateRequiredContribution({
-      annualReturnRate: inputs.annualReturnRate / 100,
-      annualFeeRate: inputs.annualFeeRate / 100,
-      yearsContributing: scenarios.base.yearsContributing,
-      yearsInRetirement: scenarios.base.yearsInRetirement,
-      existingFund: inputs.existingFund,
-      targetMonthlyPayout,
-    });
-    const gap = Math.max(0, required - inputs.monthlyContribution);
+    const targetPayout = targetMultiplier * projectedSalario;
+    const neededContribution = inputs.monthlyContribution * targetPayout / payout;
+    const gap = Math.max(0, neededContribution - inputs.monthlyContribution);
     return { actualMultiple, payout, gap };
   }, [scenarios, salarioScenarios, targetMultiplier, inputs]);
 
