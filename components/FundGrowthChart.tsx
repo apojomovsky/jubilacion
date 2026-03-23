@@ -57,7 +57,7 @@ export default function FundGrowthChart({ data, retirementAge, selectedScenario 
     const isSelected = key === selectedScenario;
     return {
       dataKey: key,
-      name: key,
+      name: LABELS[key] ?? key,
       stroke: color,
       strokeWidth: isSelected ? 3 : 1,
       strokeOpacity: isSelected ? 1 : 0.25,
