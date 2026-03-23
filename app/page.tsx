@@ -80,8 +80,13 @@ export default function Home() {
 
   const drawdownData = useMemo(() => {
     if (!scenarios) return [];
-    return buildScenariosDrawdownSeries(scenarios, inputs.retirementAge, inputs.lifeExpectancy);
-  }, [scenarios, inputs.retirementAge, inputs.lifeExpectancy]);
+    return buildScenariosDrawdownSeries(
+      scenarios,
+      inputs.retirementAge,
+      inputs.lifeExpectancy,
+      inputs.annualFeeRate / 100
+    );
+  }, [scenarios, inputs.retirementAge, inputs.lifeExpectancy, inputs.annualFeeRate]);
 
   const salarioScenarios = useMemo(() => {
     if (!isValid) return null;

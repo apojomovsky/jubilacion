@@ -335,20 +335,23 @@ export interface DrawdownPoint {
 
 /**
  * Builds yearly balance snapshots during the retirement drawdown phase.
- * The fund continues earning returns while monthly payouts are withdrawn.
- * balance[k+1] = balance[k] * (1 + r_annual) - monthlyPayout * 12
+ * Simulates month-by-month using the same net monthly rate as calculateMonthlyPayout,
+ * sampling at year boundaries. Balance reaches exactly 0 at lifeExpectancy.
  */
 export function buildScenariosDrawdownSeries(
   scenarios: Scenarios,
   retirementAge: number,
-  lifeExpectancy: number
+  lifeExpectancy: number,
+  annualFeeRate: number
 ): DrawdownPoint[] {
   function drawdownSeries(fund: number, monthlyPayout: number, annualReturnRate: number): number[] {
+    const r = (annualReturnRate - annualFeeRate) / 12;
     const points: number[] = [fund];
     let balance = fund;
-    for (let year = 1; year <= lifeExpectancy - retirementAge; year++) {
-      balance = balance * (1 + annualReturnRate) - monthlyPayout * 12;
-      points.push(Math.max(0, balance));
+    const totalMonths = (lifeExpectancy - retirementAge) * 12;
+    for (let month = 1; month <= totalMonths; month++) {
+      balance = balance * (1 + r) - monthlyPayout;
+      if (month % 12 === 0) points.push(Math.max(0, balance));
     }
     return points;
   }
