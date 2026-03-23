@@ -92,14 +92,38 @@ describe("calculateAccumulatedFund", () => {
 });
 
 describe("calculateMonthlyPayout", () => {
-  it("divides fund by expected months in retirement", () => {
+  it("uses annuity formula when rate > 0", () => {
     const fund = 120_000_000;
-    const result = calculateMonthlyPayout({ fund, retirementYears: 20 });
+    const r = 0.07 / 12;
+    const n = 20 * 12;
+    const expected = (fund * r) / (1 - Math.pow(1 + r, -n));
+    const result = calculateMonthlyPayout({
+      fund,
+      retirementYears: 20,
+      annualReturnRate: 0.07,
+      annualFeeRate: 0,
+    });
+    expect(result).toBeCloseTo(expected, 0);
+  });
+
+  it("falls back to simple division when net rate is 0", () => {
+    const fund = 120_000_000;
+    const result = calculateMonthlyPayout({
+      fund,
+      retirementYears: 20,
+      annualReturnRate: 0,
+      annualFeeRate: 0,
+    });
     expect(result).toBeCloseTo(120_000_000 / (20 * 12), 0);
   });
 
   it("returns 0 for a zero fund", () => {
-    const result = calculateMonthlyPayout({ fund: 0, retirementYears: 20 });
+    const result = calculateMonthlyPayout({
+      fund: 0,
+      retirementYears: 20,
+      annualReturnRate: 0.07,
+      annualFeeRate: 0,
+    });
     expect(result).toBe(0);
   });
 });
@@ -228,7 +252,12 @@ describe("calculateRequiredContribution", () => {
       years: params.yearsContributing,
       existingFund: 0,
     });
-    const payout = calculateMonthlyPayout({ fund, retirementYears: params.yearsInRetirement });
+    const payout = calculateMonthlyPayout({
+      fund,
+      retirementYears: params.yearsInRetirement,
+      annualReturnRate: params.annualReturnRate,
+      annualFeeRate: params.annualFeeRate,
+    });
     expect(payout).toBeCloseTo(params.targetMonthlyPayout, 0);
   });
 

@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import CalculatorForm, { DEFAULTS, type CalculatorInputs } from "@/components/CalculatorForm";
 import ResultsDisplay from "@/components/ResultsDisplay";
 import FundGrowthChart from "@/components/FundGrowthChart";
+import RetirementDrawdownChart from "@/components/RetirementDrawdownChart";
 import FutureSalarioSection from "@/components/FutureSalarioSection";
 import MathSection from "@/components/MathSection";
 import RequiredContributionSection from "@/components/RequiredContributionSection";
@@ -11,7 +12,11 @@ import type { FundScenario, SalarioScenario } from "@/components/ScenarioSelecto
 import GrowingContributionSection from "@/components/GrowingContributionSection";
 import ConclusionBanner from "@/components/ConclusionBanner";
 import SourcesSection from "@/components/SourcesSection";
-import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
+import {
+  projectScenarios,
+  buildScenariosGrowthSeries,
+  buildScenariosDrawdownSeries,
+} from "@/lib/pension";
 import { projectSalarioMinimoScenarios } from "@/lib/salarioMinimo";
 import salarioData from "@/data/salario-minimo.json";
 
@@ -19,9 +24,7 @@ const CURRENT_YEAR = 2025;
 
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-gray-700 bg-gray-900 shadow-none p-5">
-      {children}
-    </div>
+    <div className="rounded-xl border border-gray-700 bg-gray-900 shadow-none p-5">{children}</div>
   );
 }
 
@@ -34,8 +37,7 @@ export default function Home() {
   const [targetMultiplier, setTargetMultiplier] = useState(1);
 
   const isValid =
-    inputs.retirementAge > inputs.currentAge &&
-    inputs.lifeExpectancy > inputs.retirementAge;
+    inputs.retirementAge > inputs.currentAge && inputs.lifeExpectancy > inputs.retirementAge;
 
   const retirementYear = CURRENT_YEAR + (inputs.retirementAge - inputs.currentAge);
 
@@ -76,6 +78,11 @@ export default function Home() {
     );
   }, [inputs, isValid, contributionGrowthRate]);
 
+  const drawdownData = useMemo(() => {
+    if (!scenarios) return [];
+    return buildScenariosDrawdownSeries(scenarios, inputs.retirementAge, inputs.lifeExpectancy);
+  }, [scenarios, inputs.retirementAge, inputs.lifeExpectancy]);
+
   const salarioScenarios = useMemo(() => {
     if (!isValid) return null;
     return projectSalarioMinimoScenarios(salarioData.data, retirementYear);
@@ -96,15 +103,25 @@ export default function Home() {
   const selectedMonthlyPayout = scenarios ? scenarios[fundScenario].monthlyPayout : 0;
 
   // Banner calculations: always use base scenario + moderate salary growth.
-  // Gap uses proportional scaling: payout is linear in initial contribution,
-  // so neededContribution = currentContribution * targetPayout / actualPayout.
+  // When existingFund > 0, payout = contributionPayout + existingFundPayout.
+  // We scale only the contribution component to find the needed contribution.
   const bannerData = useMemo(() => {
     if (!scenarios || !salarioScenarios) return null;
     const payout = scenarios.base.monthlyPayout;
     const projectedSalario = salarioScenarios.moderate.projectedValue;
     const actualMultiple = payout / projectedSalario;
     const targetPayout = targetMultiplier * projectedSalario;
-    const neededContribution = inputs.monthlyContribution * targetPayout / payout;
+
+    const netMonthlyRate = (inputs.annualReturnRate / 100 - inputs.annualFeeRate / 100) / 12;
+    const n = scenarios.base.yearsContributing * 12;
+    const existingFundFV = inputs.existingFund * Math.pow(1 + netMonthlyRate, n);
+    const existingFundPayout = existingFundFV / (scenarios.base.yearsInRetirement * 12);
+    const contributionPayout = payout - existingFundPayout;
+
+    const neededContribution =
+      contributionPayout > 0
+        ? (inputs.monthlyContribution * (targetPayout - existingFundPayout)) / contributionPayout
+        : 0;
     const gap = Math.max(0, neededContribution - inputs.monthlyContribution);
     return { actualMultiple, payout, gap };
   }, [scenarios, salarioScenarios, targetMultiplier, inputs]);
@@ -143,7 +160,8 @@ export default function Home() {
 
         {!isValid && (
           <p className="text-sm text-red-600">
-            Verificá las edades: la edad de jubilación debe ser mayor a la actual, y la expectativa de vida mayor a la jubilación.
+            Verificá las edades: la edad de jubilación debe ser mayor a la actual, y la expectativa
+            de vida mayor a la jubilación.
           </p>
         )}
 
@@ -175,6 +193,16 @@ export default function Home() {
           <SectionCard>
             <FundGrowthChart
               data={growthData}
+              retirementAge={inputs.retirementAge}
+              selectedScenario={fundScenario}
+            />
+          </SectionCard>
+        )}
+
+        {drawdownData.length > 0 && (
+          <SectionCard>
+            <RetirementDrawdownChart
+              data={drawdownData}
               retirementAge={inputs.retirementAge}
               selectedScenario={fundScenario}
             />

@@ -9,6 +9,8 @@ export interface AccumulatedFundParams {
 export interface MonthlyPayoutParams {
   fund: number;
   retirementYears: number;
+  annualReturnRate: number;
+  annualFeeRate: number;
 }
 
 export interface ProjectPensionParams {
@@ -53,23 +55,29 @@ export function calculateAccumulatedFund({
       ? monthlyContribution * n
       : monthlyContribution * ((Math.pow(1 + r, n) - 1) / r);
 
-  const existingFV =
-    netAnnualRate === 0
-      ? existingFund
-      : existingFund * Math.pow(1 + r, n);
+  const existingFV = netAnnualRate === 0 ? existingFund : existingFund * Math.pow(1 + r, n);
 
   return contributionsFV + existingFV;
 }
 
 /**
- * Simple monthly payout: divide the fund evenly across retirement months.
+ * Monthly payout from a fund that continues earning returns during retirement.
+ * Uses the annuity payment formula: PMT = PV * r / (1 - (1+r)^-n)
+ * where r = net monthly rate, n = retirement months.
+ * Falls back to simple division when net rate is zero.
  */
 export function calculateMonthlyPayout({
   fund,
   retirementYears,
+  annualReturnRate,
+  annualFeeRate,
 }: MonthlyPayoutParams): number {
   if (fund === 0) return 0;
-  return fund / (retirementYears * 12);
+  const n = retirementYears * 12;
+  const netAnnualRate = annualReturnRate - annualFeeRate;
+  if (netAnnualRate === 0) return fund / n;
+  const r = netAnnualRate / 12;
+  return (fund * r) / (1 - Math.pow(1 + r, -n));
 }
 
 export interface FundGrowthPoint {
@@ -129,9 +137,18 @@ export function buildScenariosGrowthSeries(
     };
     points.push({
       age,
-      pessimistic: calculateAccumulatedFundWithGrowingContributions({ ...common, annualReturnRate: pessimisticRate }),
-      base: calculateAccumulatedFundWithGrowingContributions({ ...common, annualReturnRate: params.annualReturnRate }),
-      optimistic: calculateAccumulatedFundWithGrowingContributions({ ...common, annualReturnRate: optimisticRate }),
+      pessimistic: calculateAccumulatedFundWithGrowingContributions({
+        ...common,
+        annualReturnRate: pessimisticRate,
+      }),
+      base: calculateAccumulatedFundWithGrowingContributions({
+        ...common,
+        annualReturnRate: params.annualReturnRate,
+      }),
+      optimistic: calculateAccumulatedFundWithGrowingContributions({
+        ...common,
+        annualReturnRate: optimisticRate,
+      }),
     });
   }
   return points;
@@ -148,10 +165,7 @@ export interface Scenarios {
  * Default spread is 3 percentage points on the annual return rate.
  * Pessimistic return is clamped to 0 to avoid negative projections.
  */
-export function projectScenarios(
-  params: ProjectPensionParams,
-  spread = 0.03
-): Scenarios {
+export function projectScenarios(params: ProjectPensionParams, spread = 0.03): Scenarios {
   return {
     pessimistic: projectPension({
       ...params,
@@ -178,14 +192,15 @@ export interface RequiredContributionParams {
  * Solves for the monthly contribution required to reach a target monthly payout at retirement.
  *
  * Derivation:
- *   targetFund = targetMonthlyPayout * yearsInRetirement * 12
- *   existingFV = existingFund * (1 + r)^n          (existing balance compounds to retirement)
+ *   targetFund = targetMonthlyPayout * (1 - (1+r)^-n_ret) / r   (PV of retirement annuity)
+ *   existingFV = existingFund * (1 + r)^n_acc                   (existing balance compounds to retirement)
  *   neededFV   = targetFund - existingFV
  *   if neededFV <= 0: existing fund already covers target, return 0
  *   otherwise:
- *   contribution = neededFV * r / ((1 + r)^n - 1)  (inverse of annuity FV formula)
+ *   contribution = neededFV * r / ((1 + r)^n_acc - 1)           (inverse of accumulation annuity FV formula)
  *
- * where r = (annualReturnRate - annualFeeRate) / 12, n = yearsContributing * 12
+ * where r = (annualReturnRate - annualFeeRate) / 12,
+ *       n_acc = yearsContributing * 12, n_ret = yearsInRetirement * 12
  */
 export function calculateRequiredContribution({
   targetMonthlyPayout,
@@ -195,21 +210,24 @@ export function calculateRequiredContribution({
   yearsInRetirement,
   existingFund = 0,
 }: RequiredContributionParams): number {
-  const targetFund = targetMonthlyPayout * yearsInRetirement * 12;
   const netAnnualRate = annualReturnRate - annualFeeRate;
-  const n = yearsContributing * 12;
   const r = netAnnualRate / 12;
+  const nRet = yearsInRetirement * 12;
+  const targetFund =
+    netAnnualRate === 0
+      ? targetMonthlyPayout * nRet
+      : (targetMonthlyPayout * (1 - Math.pow(1 + r, -nRet))) / r;
 
-  const existingFV = netAnnualRate === 0
-    ? existingFund
-    : existingFund * Math.pow(1 + r, n);
+  const nAcc = yearsContributing * 12;
+
+  const existingFV = netAnnualRate === 0 ? existingFund : existingFund * Math.pow(1 + r, nAcc);
 
   const neededFV = targetFund - existingFV;
   if (neededFV <= 0) return 0;
 
-  if (netAnnualRate === 0) return neededFV / n;
+  if (netAnnualRate === 0) return neededFV / nAcc;
 
-  return neededFV * r / (Math.pow(1 + r, n) - 1);
+  return (neededFV * r) / (Math.pow(1 + r, nAcc) - 1);
 }
 
 export interface GrowingContributionParams {
@@ -252,15 +270,10 @@ export function calculateAccumulatedFundWithGrowingContributions({
     contributionsFV = initialMonthlyContribution * n;
   } else {
     contributionsFV =
-      initialMonthlyContribution *
-      (Math.pow(1 + r, n) - Math.pow(1 + g, n)) /
-      (r - g);
+      (initialMonthlyContribution * (Math.pow(1 + r, n) - Math.pow(1 + g, n))) / (r - g);
   }
 
-  const existingFV =
-    netAnnualRate === 0
-      ? existingFund
-      : existingFund * Math.pow(1 + r, n);
+  const existingFV = netAnnualRate === 0 ? existingFund : existingFund * Math.pow(1 + r, n);
 
   return contributionsFV + existingFV;
 }
@@ -300,6 +313,8 @@ export function projectPension({
   const monthlyPayout = calculateMonthlyPayout({
     fund: accumulatedFund,
     retirementYears: yearsInRetirement,
+    annualReturnRate,
+    annualFeeRate,
   });
 
   return {
@@ -309,4 +324,55 @@ export function projectPension({
     yearsInRetirement,
     annualReturnRate,
   };
+}
+
+export interface DrawdownPoint {
+  age: number;
+  pessimistic: number;
+  base: number;
+  optimistic: number;
+}
+
+/**
+ * Builds yearly balance snapshots during the retirement drawdown phase.
+ * The fund continues earning returns while monthly payouts are withdrawn.
+ * balance[k+1] = balance[k] * (1 + r_annual) - monthlyPayout * 12
+ */
+export function buildScenariosDrawdownSeries(
+  scenarios: Scenarios,
+  retirementAge: number,
+  lifeExpectancy: number
+): DrawdownPoint[] {
+  function drawdownSeries(fund: number, monthlyPayout: number, annualReturnRate: number): number[] {
+    const points: number[] = [fund];
+    let balance = fund;
+    for (let year = 1; year <= lifeExpectancy - retirementAge; year++) {
+      balance = balance * (1 + annualReturnRate) - monthlyPayout * 12;
+      points.push(Math.max(0, balance));
+    }
+    return points;
+  }
+
+  const pess = drawdownSeries(
+    scenarios.pessimistic.accumulatedFund,
+    scenarios.pessimistic.monthlyPayout,
+    scenarios.pessimistic.annualReturnRate
+  );
+  const base = drawdownSeries(
+    scenarios.base.accumulatedFund,
+    scenarios.base.monthlyPayout,
+    scenarios.base.annualReturnRate
+  );
+  const opt = drawdownSeries(
+    scenarios.optimistic.accumulatedFund,
+    scenarios.optimistic.monthlyPayout,
+    scenarios.optimistic.annualReturnRate
+  );
+
+  return pess.map((_, i) => ({
+    age: retirementAge + i,
+    pessimistic: pess[i],
+    base: base[i],
+    optimistic: opt[i],
+  }));
 }

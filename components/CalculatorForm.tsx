@@ -56,9 +56,13 @@ function pct(r: number) {
 function ContributionGrowthPicker({ value, onChange, salarioCagrRate }: GrowthPickerProps) {
   const customId = useId();
   const presets = [
-    { rate: 0,               label: "Nunca lo ajusto",          sub: "0%/año" },
-    { rate: 0.03,             label: "Al ritmo del IPC",         sub: "~3%/año" },
-    { rate: salarioCagrRate, label: "Al ritmo del sal. mínimo", sub: `${pct(salarioCagrRate)}/año` },
+    { rate: 0, label: "Nunca lo ajusto", sub: "0%/año" },
+    { rate: 0.03, label: "Al ritmo del IPC", sub: "~3%/año" },
+    {
+      rate: salarioCagrRate,
+      label: "Al ritmo del sal. mínimo",
+      sub: `${pct(salarioCagrRate)}/año`,
+    },
   ];
   const matchesPreset = presets.some((p) => Math.abs(p.rate - value) < 1e-5);
   const [customStr, setCustomStr] = useState(() =>
@@ -91,7 +95,9 @@ function ContributionGrowthPicker({ value, onChange, salarioCagrRate }: GrowthPi
   return (
     <div className="flex flex-col gap-2">
       <label className="text-sm font-medium text-gray-300">Ajuste anual del aporte</label>
-      <p className="text-xs text-gray-500">El monto que aportás cada mes, lo aumentas con el tiempo?</p>
+      <p className="text-xs text-gray-500">
+        El monto que aportás cada mes, lo aumentas con el tiempo?
+      </p>
       <div className="flex flex-wrap gap-2">
         {presets.map((p) => {
           const active = !customActive && activePreset?.rate === p.rate;
@@ -107,7 +113,9 @@ function ContributionGrowthPicker({ value, onChange, salarioCagrRate }: GrowthPi
               }`}
             >
               <span className="font-medium">{p.label}</span>
-              <span className={`text-xs ${active ? "text-blue-400" : "text-gray-500"}`}>{p.sub}</span>
+              <span className={`text-xs ${active ? "text-blue-400" : "text-gray-500"}`}>
+                {p.sub}
+              </span>
             </button>
           );
         })}
@@ -121,12 +129,16 @@ function ContributionGrowthPicker({ value, onChange, salarioCagrRate }: GrowthPi
           }`}
         >
           <span className="font-medium">Personalizado</span>
-          <span className={`text-xs ${customActive ? "text-blue-400" : "text-gray-500"}`}>tu propio %</span>
+          <span className={`text-xs ${customActive ? "text-blue-400" : "text-gray-500"}`}>
+            tu propio %
+          </span>
         </button>
       </div>
       {customActive && (
         <div className="flex items-center gap-2 mt-1">
-          <label htmlFor={customId} className="text-sm text-gray-400">Tasa anual:</label>
+          <label htmlFor={customId} className="text-sm text-gray-400">
+            Tasa anual:
+          </label>
           <input
             id={customId}
             type="text"
@@ -153,9 +165,7 @@ function TargetMultiplierPicker({ value, onChange }: TargetPickerProps) {
   const customId = useId();
   const presets = [0.5, 1, 1.5, 2];
   const matchesPreset = presets.some((p) => Math.abs(p - value) < 1e-5);
-  const [customStr, setCustomStr] = useState(() =>
-    matchesPreset ? "" : String(value.toFixed(1))
-  );
+  const [customStr, setCustomStr] = useState(() => (matchesPreset ? "" : String(value.toFixed(1))));
   const [customActive, setCustomActive] = useState(!matchesPreset);
 
   function selectPreset(v: number) {
@@ -215,12 +225,16 @@ function TargetMultiplierPicker({ value, onChange }: TargetPickerProps) {
           }`}
         >
           <span className="font-medium">Personalizado</span>
-          <span className={`text-xs ${customActive ? "text-blue-400" : "text-gray-500"}`}>otro múltiplo</span>
+          <span className={`text-xs ${customActive ? "text-blue-400" : "text-gray-500"}`}>
+            otro múltiplo
+          </span>
         </button>
       </div>
       {customActive && (
         <div className="flex items-center gap-2 mt-1">
-          <label htmlFor={customId} className="text-sm text-gray-400">Múltiplo:</label>
+          <label htmlFor={customId} className="text-sm text-gray-400">
+            Múltiplo:
+          </label>
           <input
             id={customId}
             type="text"
@@ -252,7 +266,9 @@ interface FieldProps {
 function NumberField({ label, name, min, max, step = 1, suffix, values, onChange }: FieldProps) {
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-300" htmlFor={name}>{label}</label>
+      <label className="text-sm font-medium text-gray-300" htmlFor={name}>
+        {label}
+      </label>
       <div className="flex items-center gap-2">
         <input
           id={name}
@@ -274,23 +290,37 @@ function dotFormat(n: number): string {
   return n === 0 ? "0" : n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
-function PYGField({ label, name, values, onChange }: Omit<FieldProps, "min" | "max" | "step" | "suffix">) {
+function PYGField({
+  label,
+  name,
+  values,
+  onChange,
+}: Omit<FieldProps, "min" | "max" | "step" | "suffix">) {
   const [editing, setEditing] = useState(false);
   const [raw, setRaw] = useState("");
   const displayValue = editing ? raw : dotFormat(values[name] as number);
 
   return (
     <div className="flex flex-col gap-1">
-      <label className="text-sm font-medium text-gray-300" htmlFor={name}>{label}</label>
+      <label className="text-sm font-medium text-gray-300" htmlFor={name}>
+        {label}
+      </label>
       <div className="flex items-center gap-2">
         <input
           id={name}
           type="text"
           inputMode="numeric"
           value={displayValue}
-          onFocus={() => { setRaw(values[name] === 0 ? "" : String(values[name])); setEditing(true); }}
+          onFocus={() => {
+            setRaw(values[name] === 0 ? "" : String(values[name]));
+            setEditing(true);
+          }}
           onChange={(e) => setRaw(e.target.value.replace(/[^0-9]/g, ""))}
-          onBlur={() => { const n = parseInt(raw, 10); onChange({ ...values, [name]: isNaN(n) ? 0 : n }); setEditing(false); }}
+          onBlur={() => {
+            const n = parseInt(raw, 10);
+            onChange({ ...values, [name]: isNaN(n) ? 0 : n });
+            setEditing(false);
+          }}
           className="w-full rounded border border-gray-600 bg-gray-800 px-3 py-2 text-sm text-gray-100 focus:border-blue-500 focus:outline-none"
         />
         <span className="text-sm text-gray-500 whitespace-nowrap">₲</span>
@@ -315,47 +345,106 @@ export default function CalculatorForm({
     <div className="bg-gray-900 rounded-lg border border-gray-700 p-6">
       <h2 className="text-lg font-semibold text-gray-100 mb-4">Tus datos</h2>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <NumberField label="Edad actual" name="currentAge" min={18} max={80} values={values} onChange={onChange} suffix="años" />
-        <NumberField label="Edad de jubilación" name="retirementAge" min={55} max={90} values={values} onChange={onChange} suffix="años" />
-        <PYGField label="Aporte mensual actual" name="monthlyContribution" values={values} onChange={onChange} />
-        <PYGField label="Saldo actual en la caja" name="existingFund" values={values} onChange={onChange} />
-
-        {mode === "simple" && (
-          <>
-            <div className="sm:col-span-2 border-t border-gray-700 pt-4">
-              <ContributionGrowthPicker value={growthRate} onChange={onGrowthRateChange} salarioCagrRate={salarioCagrRate} />
-            </div>
-            <div className="sm:col-span-2 border-t border-gray-700 pt-4">
-              <TargetMultiplierPicker value={targetMultiplier} onChange={onTargetMultiplierChange} />
-            </div>
-          </>
-        )}
+        <NumberField
+          label="Edad actual"
+          name="currentAge"
+          min={18}
+          max={80}
+          values={values}
+          onChange={onChange}
+          suffix="años"
+        />
+        <NumberField
+          label="Edad de jubilación"
+          name="retirementAge"
+          min={55}
+          max={90}
+          values={values}
+          onChange={onChange}
+          suffix="años"
+        />
+        <NumberField
+          label="Expectativa de vida"
+          name="lifeExpectancy"
+          min={60}
+          max={120}
+          values={values}
+          onChange={onChange}
+          suffix="años"
+        />
+        <PYGField
+          label="Aporte mensual actual"
+          name="monthlyContribution"
+          values={values}
+          onChange={onChange}
+        />
+        <PYGField
+          label="Saldo actual en la caja"
+          name="existingFund"
+          values={values}
+          onChange={onChange}
+        />
+        <NumberField
+          label="Rendimiento anual del fondo"
+          name="annualReturnRate"
+          min={0}
+          max={30}
+          step={0.1}
+          values={values}
+          onChange={onChange}
+          suffix="%"
+        />
+        <div className="flex flex-col gap-1">
+          <NumberField
+            label="Spread entre escenarios"
+            name="scenarioSpread"
+            min={0}
+            max={10}
+            step={0.1}
+            values={values}
+            onChange={onChange}
+            suffix="pp"
+          />
+          <p className="text-xs text-gray-500">
+            Qué tan separados están el escenario pesimista y el optimista del rendimiento base.
+          </p>
+        </div>
+        <div className="flex flex-col gap-1">
+          <PYGField
+            label="Salario mínimo de referencia"
+            name="currentSalary"
+            values={values}
+            onChange={onChange}
+          />
+          <p className="text-xs text-gray-500">
+            Fuente: {SALARIO_MINIMO_SOURCE}. Usado para expresar la renta como múltiplo del salario
+            mínimo.
+          </p>
+        </div>
 
         {mode === "advanced" && (
-          <>
-            <NumberField label="Expectativa de vida" name="lifeExpectancy" min={60} max={120} values={values} onChange={onChange} suffix="años" />
-            <div className="flex flex-col gap-1 sm:col-span-2">
-              <PYGField label="Salario mínimo de referencia" name="currentSalary" values={values} onChange={onChange} />
-              <p className="text-xs text-gray-500">
-                Fuente: {SALARIO_MINIMO_SOURCE}. Usado para expresar la renta como múltiplo del salario mínimo.
-              </p>
-            </div>
-            <NumberField label="Rendimiento anual del fondo" name="annualReturnRate" min={0} max={30} step={0.1} values={values} onChange={onChange} suffix="%" />
-            <NumberField label="Comisión anual de administración" name="annualFeeRate" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="%" />
-            <div className="flex flex-col gap-1">
-              <NumberField label="Spread entre escenarios" name="scenarioSpread" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="pp" />
-              <p className="text-xs text-gray-500">
-                Qué tan separados están el escenario pesimista y el optimista del rendimiento base.
-              </p>
-            </div>
-            <div className="sm:col-span-2 border-t border-gray-700 pt-4">
-              <ContributionGrowthPicker value={growthRate} onChange={onGrowthRateChange} salarioCagrRate={salarioCagrRate} />
-            </div>
-            <div className="sm:col-span-2 border-t border-gray-700 pt-4">
-              <TargetMultiplierPicker value={targetMultiplier} onChange={onTargetMultiplierChange} />
-            </div>
-          </>
+          <NumberField
+            label="Comisión anual de administración"
+            name="annualFeeRate"
+            min={0}
+            max={10}
+            step={0.1}
+            values={values}
+            onChange={onChange}
+            suffix="%"
+          />
         )}
+
+        <div className="sm:col-span-2 border-t border-gray-700 pt-4">
+          <ContributionGrowthPicker
+            value={growthRate}
+            onChange={onGrowthRateChange}
+            salarioCagrRate={salarioCagrRate}
+          />
+        </div>
+        <div className="sm:col-span-2 border-t border-gray-700 pt-4">
+          <TargetMultiplierPicker value={targetMultiplier} onChange={onTargetMultiplierChange} />
+        </div>
       </div>
     </div>
   );

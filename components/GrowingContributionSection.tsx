@@ -1,6 +1,9 @@
 "use client";
 
-import { calculateAccumulatedFundWithGrowingContributions, calculateMonthlyPayout } from "@/lib/pension";
+import {
+  calculateAccumulatedFundWithGrowingContributions,
+  calculateMonthlyPayout,
+} from "@/lib/pension";
 
 interface Props {
   initialMonthlyContribution: number;
@@ -29,11 +32,21 @@ interface RowProps {
   highlight?: boolean;
 }
 
-function Row({ label, sublabel, growthRate, fund, monthlyPayout, multiplier, highlight }: RowProps) {
+function Row({
+  label,
+  sublabel,
+  growthRate,
+  fund,
+  monthlyPayout,
+  multiplier,
+  highlight,
+}: RowProps) {
   return (
-    <div className={`grid grid-cols-5 gap-3 rounded-lg border px-4 py-3 text-sm min-w-[700px] ${
-      highlight ? "border-blue-700 bg-blue-950" : "border-gray-800 bg-gray-800"
-    }`}>
+    <div
+      className={`grid grid-cols-5 gap-3 rounded-lg border px-4 py-3 text-sm min-w-[700px] ${
+        highlight ? "border-blue-700 bg-blue-950" : "border-gray-800 bg-gray-800"
+      }`}
+    >
       <div>
         <p className={`font-medium ${highlight ? "text-blue-400" : "text-gray-300"}`}>{label}</p>
         <p className="text-xs text-gray-500">{sublabel}</p>
@@ -79,14 +92,30 @@ export default function GrowingContributionSection({
   };
 
   const presets = [
-    { rate: 0,                    label: "Nunca lo toco",                            sublabel: "siempre el mismo monto nominal" },
-    { rate: 0.03,                  label: "Lo ajusto anualmente al IPC (inflacion)", sublabel: "~3%/año estimado, mantiene su valor real" },
-    { rate: salarioMinimoCagrRate, label: "Lo ajusto al ritmo del salario mínimo",   sublabel: `${pct(salarioMinimoCagrRate)}/año (CAGR 2010-hoy)` },
+    { rate: 0, label: "Nunca lo toco", sublabel: "siempre el mismo monto nominal" },
+    {
+      rate: 0.03,
+      label: "Lo ajusto anualmente al IPC (inflacion)",
+      sublabel: "~3%/año estimado, mantiene su valor real",
+    },
+    {
+      rate: salarioMinimoCagrRate,
+      label: "Lo ajusto al ritmo del salario mínimo",
+      sublabel: `${pct(salarioMinimoCagrRate)}/año (CAGR 2010-hoy)`,
+    },
   ];
 
-  const isCustom = !presets.some((p) => Math.abs(p.rate - selectedGrowthRate) < 1e-5) && selectedGrowthRate > 0;
+  const isCustom =
+    !presets.some((p) => Math.abs(p.rate - selectedGrowthRate) < 1e-5) && selectedGrowthRate > 0;
   const rates = isCustom
-    ? [...presets, { rate: selectedGrowthRate, label: "Personalizado", sublabel: `${pct(selectedGrowthRate)}/año` }]
+    ? [
+        ...presets,
+        {
+          rate: selectedGrowthRate,
+          label: "Personalizado",
+          sublabel: `${pct(selectedGrowthRate)}/año`,
+        },
+      ]
     : presets;
 
   const results = rates.map(({ rate, label, sublabel }) => {
@@ -94,14 +123,19 @@ export default function GrowingContributionSection({
       ...commonParams,
       annualContributionGrowthRate: rate,
     });
-    const payout = calculateMonthlyPayout({ fund, retirementYears: yearsInRetirement });
+    const payout = calculateMonthlyPayout({
+      fund,
+      retirementYears: yearsInRetirement,
+      annualReturnRate,
+      annualFeeRate,
+    });
     return { rate, label, sublabel, fund, payout };
   });
 
   const baseFund = results[0].fund;
 
-  const finalContributions = rates.map(({ rate }) =>
-    initialMonthlyContribution * Math.pow(1 + rate, yearsContributing)
+  const finalContributions = rates.map(
+    ({ rate }) => initialMonthlyContribution * Math.pow(1 + rate, yearsContributing)
   );
 
   return (
@@ -109,38 +143,39 @@ export default function GrowingContributionSection({
       <div>
         <h2 className="text-lg font-semibold text-gray-100">Impacto del ajuste anual del aporte</h2>
         <p className="text-sm text-gray-400 mt-1">
-          Según la opción que elegiste arriba, la tabla muestra como cambia el fondo final y la renta mensual.
-          La columna "vs. fijo" compara cada opción contra no ajustar nunca el aporte.
+          Según la opción que elegiste arriba, la tabla muestra como cambia el fondo final y la
+          renta mensual. La columna &quot;vs. fijo&quot; compara cada opción contra no ajustar nunca
+          el aporte.
         </p>
       </div>
 
       <div className="overflow-x-auto">
-      <div className="flex flex-col gap-2">
-        <div className="grid grid-cols-5 gap-3 px-4 text-xs text-gray-600 font-medium uppercase tracking-wide min-w-[700px]">
-          <span>Opción de ajuste</span>
-          <span>Aumento anual</span>
-          <span>Fondo al retiro</span>
-          <span>Renta mensual</span>
-          <span>vs. fijo</span>
+        <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-5 gap-3 px-4 text-xs text-gray-600 font-medium uppercase tracking-wide min-w-[700px]">
+            <span>Opción de ajuste</span>
+            <span>Aumento anual</span>
+            <span>Fondo al retiro</span>
+            <span>Renta mensual</span>
+            <span>vs. fijo</span>
+          </div>
+          {results.map((r, i) => (
+            <Row
+              key={r.rate}
+              label={r.label}
+              sublabel={`Aporte final: ${formatPYG(Math.round(finalContributions[i]))}/mes`}
+              growthRate={r.rate}
+              fund={r.fund}
+              monthlyPayout={r.payout}
+              multiplier={r.fund / baseFund}
+              highlight={Math.abs(r.rate - selectedGrowthRate) < 1e-5}
+            />
+          ))}
         </div>
-        {results.map((r, i) => (
-          <Row
-            key={r.rate}
-            label={r.label}
-            sublabel={`Aporte final: ${formatPYG(Math.round(finalContributions[i]))}/mes`}
-            growthRate={r.rate}
-            fund={r.fund}
-            monthlyPayout={r.payout}
-            multiplier={r.fund / baseFund}
-            highlight={Math.abs(r.rate - selectedGrowthRate) < 1e-5}
-          />
-        ))}
-      </div>
       </div>
 
       <p className="text-xs text-gray-600">
-        "Aporte final" es el monto mensual que estarías aportando en el último año antes del retiro,
-        si aplicás ese ritmo de ajuste consistentemente. Valores nominales.
+        &quot;Aporte final&quot; es el monto mensual que estarías aportando en el último año antes
+        del retiro, si aplicás ese ritmo de ajuste consistentemente. Valores nominales.
       </p>
     </div>
   );
