@@ -321,9 +321,14 @@ export default function CalculatorForm({
         <PYGField label="Saldo actual en la caja" name="existingFund" values={values} onChange={onChange} />
 
         {mode === "simple" && (
-          <div className="sm:col-span-2 border-t border-gray-700 pt-4">
-            <TargetMultiplierPicker value={targetMultiplier} onChange={onTargetMultiplierChange} />
-          </div>
+          <>
+            <div className="sm:col-span-2 border-t border-gray-700 pt-4">
+              <ContributionGrowthPicker value={growthRate} onChange={onGrowthRateChange} salarioCagrRate={salarioCagrRate} />
+            </div>
+            <div className="sm:col-span-2 border-t border-gray-700 pt-4">
+              <TargetMultiplierPicker value={targetMultiplier} onChange={onTargetMultiplierChange} />
+            </div>
+          </>
         )}
 
         {mode === "advanced" && (
