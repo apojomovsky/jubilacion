@@ -9,8 +9,9 @@ import MathSection from "@/components/MathSection";
 import RequiredContributionSection from "@/components/RequiredContributionSection";
 import type { FundScenario, SalarioScenario } from "@/components/ScenarioSelector";
 import GrowingContributionSection from "@/components/GrowingContributionSection";
+import ConclusionBanner from "@/components/ConclusionBanner";
 import SourcesSection from "@/components/SourcesSection";
-import { projectScenarios, buildScenariosGrowthSeries } from "@/lib/pension";
+import { projectScenarios, buildScenariosGrowthSeries, calculateRequiredContribution } from "@/lib/pension";
 import { projectSalarioMinimoScenarios } from "@/lib/salarioMinimo";
 import salarioData from "@/data/salario-minimo.json";
 
@@ -25,10 +26,12 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 }
 
 export default function Home() {
+  const [mode, setMode] = useState<"simple" | "advanced">("simple");
   const [inputs, setInputs] = useState<CalculatorInputs>(DEFAULTS);
   const [fundScenario, setFundScenario] = useState<FundScenario>("base");
   const [salarioScenario, setSalarioScenario] = useState<SalarioScenario>("moderate");
   const [contributionGrowthRate, setContributionGrowthRate] = useState(0);
+  const [targetMultiplier, setTargetMultiplier] = useState(1);
 
   const isValid =
     inputs.retirementAge > inputs.currentAge &&
@@ -78,33 +81,55 @@ export default function Home() {
     return projectSalarioMinimoScenarios(salarioData.data, retirementYear);
   }, [isValid, retirementYear]);
 
-  // Always available for the growth rate picker (doesn't depend on isValid)
   const salarioCagrRate = useMemo(
     () => projectSalarioMinimoScenarios(salarioData.data, retirementYear).moderate.annualGrowthRate,
     [retirementYear]
   );
 
-  // Effective gross return rate for the selected fund scenario
   const selectedFundReturnRate = useMemo(() => {
     const gross = inputs.annualReturnRate / 100;
     if (fundScenario === "pessimistic") return Math.max(0, gross - inputs.scenarioSpread / 100);
     if (fundScenario === "optimistic") return gross + inputs.scenarioSpread / 100;
     return gross;
-  }, [inputs.annualReturnRate, fundScenario]);
+  }, [inputs.annualReturnRate, inputs.scenarioSpread, fundScenario]);
 
-  // Monthly payout for the selected fund scenario
-  const selectedMonthlyPayout = scenarios
-    ? scenarios[fundScenario].monthlyPayout
-    : 0;
+  const selectedMonthlyPayout = scenarios ? scenarios[fundScenario].monthlyPayout : 0;
+
+  // Banner calculations: always use base scenario + moderate salary growth
+  const bannerData = useMemo(() => {
+    if (!scenarios || !salarioScenarios) return null;
+    const payout = scenarios.base.monthlyPayout;
+    const projectedSalario = salarioScenarios.moderate.projectedValue;
+    const actualMultiple = payout / projectedSalario;
+    const targetMonthlyPayout = targetMultiplier * projectedSalario;
+    const required = calculateRequiredContribution({
+      annualReturnRate: inputs.annualReturnRate / 100,
+      annualFeeRate: inputs.annualFeeRate / 100,
+      yearsContributing: scenarios.base.yearsContributing,
+      yearsInRetirement: scenarios.base.yearsInRetirement,
+      existingFund: inputs.existingFund,
+      targetMonthlyPayout,
+    });
+    const gap = Math.max(0, required - inputs.monthlyContribution);
+    return { actualMultiple, payout, gap };
+  }, [scenarios, salarioScenarios, targetMultiplier, inputs]);
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-8">
-      <div className="mb-8 flex items-center gap-4">
-        <img src="/logo.svg" alt="Previsor" className="w-14 h-14 rounded-xl" />
-        <div>
-          <h1 className="text-2xl font-bold">Previsor</h1>
-          <p className="text-gray-500 mt-0.5">Calculadora de jubilación privada · Paraguay</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <img src="/logo.svg" alt="Previsor" className="w-14 h-14 rounded-xl" />
+          <div>
+            <h1 className="text-2xl font-bold">Previsor</h1>
+            <p className="text-gray-500 mt-0.5">Calculadora de jubilación privada · Paraguay</p>
+          </div>
         </div>
+        <button
+          onClick={() => setMode(mode === "simple" ? "advanced" : "simple")}
+          className="text-sm text-gray-400 hover:text-gray-200 border border-gray-700 rounded-lg px-3 py-1.5 transition-colors"
+        >
+          {mode === "simple" ? "Modo avanzado" : "Modo simple"}
+        </button>
       </div>
 
       <div className="flex flex-col gap-5">
@@ -115,6 +140,9 @@ export default function Home() {
             growthRate={contributionGrowthRate}
             onGrowthRateChange={setContributionGrowthRate}
             salarioCagrRate={salarioCagrRate}
+            mode={mode}
+            targetMultiplier={targetMultiplier}
+            onTargetMultiplierChange={setTargetMultiplier}
           />
         </SectionCard>
 
@@ -122,6 +150,16 @@ export default function Home() {
           <p className="text-sm text-red-600">
             Verificá las edades: la edad de jubilación debe ser mayor a la actual, y la expectativa de vida mayor a la jubilación.
           </p>
+        )}
+
+        {bannerData && (
+          <ConclusionBanner
+            actualMultiple={bannerData.actualMultiple}
+            targetMultiple={targetMultiplier}
+            monthlyPayout={bannerData.payout}
+            contributionGap={bannerData.gap}
+            targetYear={retirementYear}
+          />
         )}
 
         {scenarios && (
@@ -148,7 +186,7 @@ export default function Home() {
           </SectionCard>
         )}
 
-        {scenarios && salarioScenarios && (
+        {mode === "advanced" && scenarios && salarioScenarios && (
           <SectionCard>
             <FutureSalarioSection
               scenarios={salarioScenarios}
@@ -160,7 +198,7 @@ export default function Home() {
           </SectionCard>
         )}
 
-        {scenarios && salarioScenarios && (
+        {mode === "advanced" && scenarios && salarioScenarios && (
           <SectionCard>
             <RequiredContributionSection
               annualReturnRate={selectedFundReturnRate}
@@ -175,7 +213,7 @@ export default function Home() {
           </SectionCard>
         )}
 
-        {scenarios && salarioScenarios && (
+        {mode === "advanced" && scenarios && salarioScenarios && (
           <SectionCard>
             <GrowingContributionSection
               initialMonthlyContribution={inputs.monthlyContribution}
@@ -190,7 +228,7 @@ export default function Home() {
           </SectionCard>
         )}
 
-        {salarioScenarios && (
+        {mode === "advanced" && salarioScenarios && (
           <MathSection
             historicalData={salarioData.data}
             scenarios={salarioScenarios}
