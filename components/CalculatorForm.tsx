@@ -236,7 +236,14 @@ export default function CalculatorForm({ values, onChange, growthRate, onGrowthR
         </div>
         <NumberField label="Rendimiento anual del fondo" name="annualReturnRate" min={0} max={30} step={0.1} values={values} onChange={onChange} suffix="%" />
         <NumberField label="Comisión anual de administración" name="annualFeeRate" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="%" />
-        <NumberField label="Spread entre escenarios" name="scenarioSpread" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="pp" />
+        <div className="flex flex-col gap-1">
+          <NumberField label="Spread entre escenarios" name="scenarioSpread" min={0} max={10} step={0.1} values={values} onChange={onChange} suffix="pp" />
+          <p className="text-xs text-gray-500">
+            Pesimista: tu fondo rinde {(values.annualReturnRate - values.scenarioSpread).toFixed(1)}%/año.
+            Optimista: {(values.annualReturnRate + values.scenarioSpread).toFixed(1)}%/año.
+            Simula que el rendimiento real se desvía consistentemente del esperado durante todos los años de acumulación.
+          </p>
+        </div>
         <div className="sm:col-span-2 border-t border-gray-700 pt-4">
           <ContributionGrowthPicker value={growthRate} onChange={onGrowthRateChange} salarioCagrRate={salarioCagrRate} />
         </div>
