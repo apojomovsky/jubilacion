@@ -77,10 +77,9 @@ export default function GrowingContributionSection({
   };
 
   const rates = [
-    { rate: 0,                    label: "Nunca lo toco",                        sublabel: "en 30 años sigo pagando el mismo monto" },
-    { rate: 0.03,                  label: "Lo ajusto para que no pierda valor",   sublabel: "compensa la inflacion, no gana ni pierde" },
-    { rate: 0.045,                 label: "Lo ajusto para que crezca de verdad",  sublabel: "supera la inflacion, cada año aporto mas en terminos reales" },
-    { rate: salarioMinimoCagrRate, label: "Lo ajusto al ritmo del salario minimo", sublabel: `${pct(salarioMinimoCagrRate)}/año (CAGR 2010-hoy)` },
+    { rate: 0,                    label: "Nunca lo toco",                            sublabel: "siempre el mismo monto nominal" },
+    { rate: 0.03,                  label: "Lo ajusto anualmente al IPC (inflacion)", sublabel: "~3%/año estimado, mantiene su valor real" },
+    { rate: salarioMinimoCagrRate, label: "Lo ajusto al ritmo del salario minimo",   sublabel: `${pct(salarioMinimoCagrRate)}/año (CAGR 2010-hoy)` },
   ];
 
   const results = rates.map(({ rate, label, sublabel }) => {
