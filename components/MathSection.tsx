@@ -57,15 +57,15 @@ function ModelCard({ scenarios }: { scenarios: SalarioMinimoScenarios }) {
         <div className="flex flex-col gap-1 text-sm">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-orange-400 inline-block" />
-            <span className="text-gray-300">Lento: {((scenarios.slow.annualGrowthRate) * 100).toFixed(2)}% — el salario mínimo crece menos que el promedio histórico</span>
+            <span className="text-gray-300">Lento: {((scenarios.slow.annualGrowthRate) * 100).toFixed(2)}% (el salario mínimo crece menos que el promedio histórico)</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-blue-500 inline-block" />
-            <span className="text-gray-300">Histórico: {rPct}% — el salario mínimo mantiene su ritmo de crecimiento</span>
+            <span className="text-gray-300">Histórico: {rPct}% (el salario mínimo mantiene su ritmo de crecimiento)</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-green-500 inline-block" />
-            <span className="text-gray-300">Alto: {((scenarios.fast.annualGrowthRate) * 100).toFixed(2)}% — mayor inflación o presión salarial</span>
+            <span className="text-gray-300">Alto: {((scenarios.fast.annualGrowthRate) * 100).toFixed(2)}% (mayor inflación o presión salarial)</span>
           </div>
         </div>
         <p className="text-xs text-gray-500 mt-2">

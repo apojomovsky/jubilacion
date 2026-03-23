@@ -91,7 +91,7 @@ export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread,
             {yearsContributing} años de aporte (de los {currentAge} a los {retirementAge}) · {yearsInRetirement} años de retiro · spread ±{(spread * 100).toFixed(0)}pp
           </span>
         </div>
-        <p className="text-xs text-gray-500 mt-0.5">Hacé clic en un escenario para seleccionarlo — el gráfico y las secciones de abajo se actualizan.</p>
+        <p className="text-xs text-gray-500 mt-0.5">Hacé clic en un escenario para seleccionarlo. El gráfico y las secciones de abajo se actualizan.</p>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <ScenarioColumn
