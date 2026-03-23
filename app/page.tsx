@@ -29,6 +29,7 @@ export default function Home() {
   const [inputs, setInputs] = useState<CalculatorInputs>(DEFAULTS);
   const [fundScenario, setFundScenario] = useState<FundScenario>("base");
   const [salarioScenario, setSalarioScenario] = useState<SalarioScenario>("moderate");
+  const [contributionGrowthRate, setContributionGrowthRate] = useState(0);
 
   const isValid =
     inputs.retirementAge > inputs.currentAge &&
@@ -48,13 +49,14 @@ export default function Home() {
           retirementAge: inputs.retirementAge,
           lifeExpectancy: inputs.lifeExpectancy,
           existingFund: inputs.existingFund,
+          annualContributionGrowthRate: contributionGrowthRate,
         },
         SCENARIO_SPREAD
       );
     } catch {
       return null;
     }
-  }, [inputs, isValid]);
+  }, [inputs, isValid, contributionGrowthRate]);
 
   const growthData = useMemo(() => {
     if (!isValid) return [];
@@ -66,15 +68,22 @@ export default function Home() {
         currentAge: inputs.currentAge,
         retirementAge: inputs.retirementAge,
         existingFund: inputs.existingFund,
+        annualContributionGrowthRate: contributionGrowthRate,
       },
       SCENARIO_SPREAD
     );
-  }, [inputs, isValid]);
+  }, [inputs, isValid, contributionGrowthRate]);
 
   const salarioScenarios = useMemo(() => {
     if (!isValid) return null;
     return projectSalarioMinimoScenarios(salarioData.data, retirementYear);
   }, [isValid, retirementYear]);
+
+  // Always available for the growth rate picker (doesn't depend on isValid)
+  const salarioCagrRate = useMemo(
+    () => projectSalarioMinimoScenarios(salarioData.data, retirementYear).moderate.annualGrowthRate,
+    [retirementYear]
+  );
 
   // Effective gross return rate for the selected fund scenario
   const selectedFundReturnRate = useMemo(() => {
@@ -98,7 +107,13 @@ export default function Home() {
 
       <div className="flex flex-col gap-5">
         <SectionCard>
-          <CalculatorForm values={inputs} onChange={setInputs} />
+          <CalculatorForm
+            values={inputs}
+            onChange={setInputs}
+            growthRate={contributionGrowthRate}
+            onGrowthRateChange={setContributionGrowthRate}
+            salarioCagrRate={salarioCagrRate}
+          />
         </SectionCard>
 
         {!isValid && (
@@ -168,6 +183,7 @@ export default function Home() {
               yearsInRetirement={scenarios.base.yearsInRetirement}
               existingFund={inputs.existingFund}
               salarioMinimoCagrRate={salarioScenarios.moderate.annualGrowthRate}
+              selectedGrowthRate={contributionGrowthRate}
             />
           </SectionCard>
         )}

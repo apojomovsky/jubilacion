@@ -10,6 +10,7 @@ interface Props {
   yearsInRetirement: number;
   existingFund: number;
   salarioMinimoCagrRate: number; // moderate scenario CAGR for labeling
+  selectedGrowthRate: number; // currently active growth rate from the form
 }
 
 import { formatPYG } from "@/lib/format";
@@ -67,6 +68,7 @@ export default function GrowingContributionSection({
   yearsInRetirement,
   existingFund,
   salarioMinimoCagrRate,
+  selectedGrowthRate,
 }: Props) {
   const commonParams = {
     initialMonthlyContribution,
@@ -76,11 +78,16 @@ export default function GrowingContributionSection({
     existingFund,
   };
 
-  const rates = [
+  const presets = [
     { rate: 0,                    label: "Nunca lo toco",                            sublabel: "siempre el mismo monto nominal" },
     { rate: 0.03,                  label: "Lo ajusto anualmente al IPC (inflacion)", sublabel: "~3%/año estimado, mantiene su valor real" },
     { rate: salarioMinimoCagrRate, label: "Lo ajusto al ritmo del salario minimo",   sublabel: `${pct(salarioMinimoCagrRate)}/año (CAGR 2010-hoy)` },
   ];
+
+  const isCustom = !presets.some((p) => Math.abs(p.rate - selectedGrowthRate) < 1e-5) && selectedGrowthRate > 0;
+  const rates = isCustom
+    ? [...presets, { rate: selectedGrowthRate, label: "Personalizado", sublabel: `${pct(selectedGrowthRate)}/año` }]
+    : presets;
 
   const results = rates.map(({ rate, label, sublabel }) => {
     const fund = calculateAccumulatedFundWithGrowingContributions({
@@ -100,18 +107,17 @@ export default function GrowingContributionSection({
   return (
     <div className="flex flex-col gap-3">
       <div>
-        <h2 className="text-lg font-semibold text-gray-100">¿Qué pasa si aumentás tu aporte cada año?</h2>
+        <h2 className="text-lg font-semibold text-gray-100">Impacto del ajuste anual del aporte</h2>
         <p className="text-sm text-gray-400 mt-1">
-          Hoy aportás {formatPYG(initialMonthlyContribution)}/mes. La pregunta es: cada año, ese monto, lo dejás igual o lo aumentas?
-          Si lo aumentas aunque sea un poco, el efecto sobre el fondo final es enorme.
-          La tabla muestra cuanto terminas aportando y que fondo acumulas segun el ritmo de aumento que elijas.
+          Segun la opcion que elegiste arriba, la tabla muestra como cambia el fondo final y la renta mensual.
+          La columna "vs. fijo" compara cada opcion contra no ajustar nunca el aporte.
         </p>
       </div>
 
       <div className="overflow-x-auto">
       <div className="flex flex-col gap-2">
         <div className="grid grid-cols-5 gap-3 px-4 text-xs text-gray-600 font-medium uppercase tracking-wide min-w-[700px]">
-          <span>Que hago con mi aporte cada año</span>
+          <span>Opcion de ajuste</span>
           <span>Aumento anual</span>
           <span>Fondo al retiro</span>
           <span>Renta mensual</span>
@@ -126,7 +132,7 @@ export default function GrowingContributionSection({
             fund={r.fund}
             monthlyPayout={r.payout}
             multiplier={r.fund / baseFund}
-            highlight={i === rates.findIndex(({ rate }) => Math.abs(rate - salarioMinimoCagrRate) < 0.001)}
+            highlight={Math.abs(r.rate - selectedGrowthRate) < 1e-5}
           />
         ))}
       </div>

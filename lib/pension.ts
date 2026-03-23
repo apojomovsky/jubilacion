@@ -19,6 +19,7 @@ export interface ProjectPensionParams {
   retirementAge: number;
   lifeExpectancy: number;
   existingFund?: number;
+  annualContributionGrowthRate?: number;
 }
 
 export interface ProjectPensionResult {
@@ -119,12 +120,18 @@ export function buildScenariosGrowthSeries(
   const points: ScenarioGrowthPoint[] = [];
   for (let age = params.currentAge; age <= params.retirementAge; age++) {
     const years = age - params.currentAge;
-    const common = { monthlyContribution: params.monthlyContribution, annualFeeRate: params.annualFeeRate, years, existingFund: params.existingFund };
+    const common = {
+      initialMonthlyContribution: params.monthlyContribution,
+      annualContributionGrowthRate: params.annualContributionGrowthRate ?? 0,
+      annualFeeRate: params.annualFeeRate,
+      years,
+      existingFund: params.existingFund,
+    };
     points.push({
       age,
-      pessimistic: calculateAccumulatedFund({ ...common, annualReturnRate: pessimisticRate }),
-      base: calculateAccumulatedFund({ ...common, annualReturnRate: params.annualReturnRate }),
-      optimistic: calculateAccumulatedFund({ ...common, annualReturnRate: optimisticRate }),
+      pessimistic: calculateAccumulatedFundWithGrowingContributions({ ...common, annualReturnRate: pessimisticRate }),
+      base: calculateAccumulatedFundWithGrowingContributions({ ...common, annualReturnRate: params.annualReturnRate }),
+      optimistic: calculateAccumulatedFundWithGrowingContributions({ ...common, annualReturnRate: optimisticRate }),
     });
   }
   return points;
@@ -269,6 +276,7 @@ export function projectPension({
   retirementAge,
   lifeExpectancy,
   existingFund = 0,
+  annualContributionGrowthRate = 0,
 }: ProjectPensionParams): ProjectPensionResult {
   if (retirementAge <= currentAge) {
     throw new Error("retirementAge must be greater than currentAge");
@@ -280,8 +288,9 @@ export function projectPension({
   const yearsContributing = retirementAge - currentAge;
   const yearsInRetirement = lifeExpectancy - retirementAge;
 
-  const accumulatedFund = calculateAccumulatedFund({
-    monthlyContribution,
+  const accumulatedFund = calculateAccumulatedFundWithGrowingContributions({
+    initialMonthlyContribution: monthlyContribution,
+    annualContributionGrowthRate: annualContributionGrowthRate ?? 0,
     annualReturnRate,
     annualFeeRate,
     years: yearsContributing,
