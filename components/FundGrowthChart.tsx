@@ -96,9 +96,9 @@ export default function FundGrowthChart({ data, retirementAge, selectedScenario 
             <YAxis tickFormatter={formatBillions} tick={{ fontSize: 12, fill: "#6b7280" }} width={52} />
             <Tooltip content={<CustomTooltip />} />
             <Legend formatter={(value) => LABELS[value] ?? value} />
-            <Area type="monotone" {...areaProps("pessimistic", "#f97316", "4 2")} />
-            <Area type="monotone" {...areaProps("base", "#3b82f6")} />
             <Area type="monotone" {...areaProps("optimistic", "#22c55e", "4 2")} />
+            <Area type="monotone" {...areaProps("base", "#3b82f6")} />
+            <Area type="monotone" {...areaProps("pessimistic", "#f97316", "4 2")} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
