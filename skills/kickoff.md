@@ -13,6 +13,7 @@ Work through these phases in order. Don't rush. Ask follow-up questions when ans
 Goal: Understand what the user wants to build and why.
 
 Ask about:
+
 - What problem does this solve? Who is it for?
 - Is there an existing solution they're replacing or improving on?
 - What does success look like? (MVP scope, not the dream)
@@ -24,6 +25,7 @@ Move on when you have: a clear one-paragraph description of the project and its 
 Goal: Nail down the stack and key architectural decisions.
 
 Ask about:
+
 - Language(s) and runtime
 - Framework preferences or constraints
 - Key external dependencies (databases, APIs, services)
@@ -39,6 +41,7 @@ Move on when you have: a concrete tech stack and high-level architecture.
 Goal: Define how the codebase should be organized.
 
 Ask about:
+
 - Preferred directory layout (or propose one based on the stack)
 - Module/package boundaries
 - Where tests live
@@ -52,6 +55,7 @@ Move on when you have: a directory tree you could scaffold.
 Goal: Define how the user wants to collaborate with AI tools.
 
 Ask about:
+
 - What should AI tools do autonomously vs. ask about first?
 - Testing expectations (TDD? test after? what kind of tests?)
 - Code style preferences not covered by a formatter

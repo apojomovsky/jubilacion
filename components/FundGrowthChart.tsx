@@ -28,13 +28,23 @@ function formatBillions(value: number): string {
 
 import { formatPYG } from "@/lib/format";
 
-function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: { name: string; value: number; color: string }[]; label?: number }) {
+function CustomTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: { name: string; value: number; color: string }[];
+  label?: number;
+}) {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-gray-800 border border-gray-700 rounded p-2 text-sm shadow text-gray-100">
       <p className="font-medium mb-1 text-gray-300">Edad {label}</p>
       {payload.map((p) => (
-        <p key={p.name} style={{ color: p.color }}>{p.name}: {formatPYG(p.value)}</p>
+        <p key={p.name} style={{ color: p.color }}>
+          {p.name}: {formatPYG(p.value)}
+        </p>
       ))}
     </div>
   );
@@ -48,8 +58,8 @@ const LABELS: Record<string, string> = {
 
 const GLOW: Record<FundScenario, string> = {
   pessimistic: "drop-shadow(0 0 6px rgba(249,115,22,0.7))",
-  base:        "drop-shadow(0 0 6px rgba(59,130,246,0.7))",
-  optimistic:  "drop-shadow(0 0 6px rgba(34,197,94,0.7))",
+  base: "drop-shadow(0 0 6px rgba(59,130,246,0.7))",
+  optimistic: "drop-shadow(0 0 6px rgba(34,197,94,0.7))",
 };
 
 export default function FundGrowthChart({ data, retirementAge, selectedScenario }: Props) {
@@ -72,7 +82,8 @@ export default function FundGrowthChart({ data, retirementAge, selectedScenario 
     <div className="flex flex-col gap-1">
       <h2 className="text-lg font-semibold text-gray-100">Crecimiento del fondo</h2>
       <p className="text-sm text-gray-400">
-        Fondo acumulado por edad hasta el retiro a los {retirementAge} años · escenario seleccionado resaltado
+        Fondo acumulado por edad hasta el retiro a los {retirementAge} años · escenario seleccionado
+        resaltado
       </p>
       <div className="mt-3">
         <ResponsiveContainer width="100%" height={280}>
@@ -92,8 +103,22 @@ export default function FundGrowthChart({ data, retirementAge, selectedScenario 
               </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="age" tick={{ fontSize: 12, fill: "#6b7280" }} label={{ value: "Edad", position: "insideBottomRight", offset: -8, fontSize: 12, fill: "#6b7280" }} />
-            <YAxis tickFormatter={formatBillions} tick={{ fontSize: 12, fill: "#6b7280" }} width={52} />
+            <XAxis
+              dataKey="age"
+              tick={{ fontSize: 12, fill: "#6b7280" }}
+              label={{
+                value: "Edad",
+                position: "insideBottomRight",
+                offset: -8,
+                fontSize: 12,
+                fill: "#6b7280",
+              }}
+            />
+            <YAxis
+              tickFormatter={formatBillions}
+              tick={{ fontSize: 12, fill: "#6b7280" }}
+              width={52}
+            />
             <Tooltip content={<CustomTooltip />} />
             <Legend formatter={(value) => LABELS[value] ?? value} />
             <Area type="monotone" {...areaProps("optimistic", "#22c55e", "4 2")} />

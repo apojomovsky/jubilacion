@@ -31,12 +31,11 @@ export function computeCAGR(
 ): number {
   const sorted = [...data].sort((a, b) => a.year - b.year);
 
-  const start = fromYear !== undefined
-    ? sorted.find((d) => d.year >= fromYear)
-    : sorted[0];
-  const end = toYear !== undefined
-    ? [...sorted].reverse().find((d) => d.year <= toYear)
-    : sorted[sorted.length - 1];
+  const start = fromYear !== undefined ? sorted.find((d) => d.year >= fromYear) : sorted[0];
+  const end =
+    toYear !== undefined
+      ? [...sorted].reverse().find((d) => d.year <= toYear)
+      : sorted[sorted.length - 1];
 
   if (!start || !end || start === end) {
     throw new Error("Not enough data points to compute CAGR for the given range");
@@ -99,10 +98,7 @@ export function projectSalarioMinimoScenarios(
   const baseYear = last.year;
   const dataPointCount = sorted.filter((d) => d.year >= cagrStart.year).length;
 
-  function makeScenario(
-    rate: number,
-    label: string
-  ): SalarioMinimoScenario {
+  function makeScenario(rate: number, label: string): SalarioMinimoScenario {
     return {
       annualGrowthRate: rate,
       projectedValue: projectSalarioMinimo({

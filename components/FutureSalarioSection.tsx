@@ -26,7 +26,14 @@ interface ScenarioRowProps {
   onClick: () => void;
 }
 
-function ScenarioRow({ label, growthRate, projectedSalario, monthlyPayout, selected, onClick }: ScenarioRowProps) {
+function ScenarioRow({
+  label,
+  growthRate,
+  projectedSalario,
+  monthlyPayout,
+  selected,
+  onClick,
+}: ScenarioRowProps) {
   const multiple = monthlyPayout / projectedSalario;
   return (
     <div
@@ -57,7 +64,9 @@ function ScenarioRow({ label, growthRate, projectedSalario, monthlyPayout, selec
       </div>
       <div>
         <p className="text-xs text-gray-500">Renta / sal. mínimo</p>
-        <p className={`text-lg font-bold ${multiple >= 1 ? "text-green-600" : multiple >= 0.5 ? "text-yellow-600" : "text-red-500"}`}>
+        <p
+          className={`text-lg font-bold ${multiple >= 1 ? "text-green-600" : multiple >= 0.5 ? "text-yellow-600" : "text-red-500"}`}
+        >
           {multiple.toFixed(2)}x
         </p>
         <p className="text-xs text-gray-500">{(multiple * 100).toFixed(0)}% del sal. mín.</p>
@@ -66,7 +75,13 @@ function ScenarioRow({ label, growthRate, projectedSalario, monthlyPayout, selec
   );
 }
 
-export default function FutureSalarioSection({ scenarios, targetYear, monthlyPensionPayout, selectedSalarioScenario, onSelectSalarioScenario }: Props) {
+export default function FutureSalarioSection({
+  scenarios,
+  targetYear,
+  monthlyPensionPayout,
+  selectedSalarioScenario,
+  onSelectSalarioScenario,
+}: Props) {
   const { slow, moderate, fast } = scenarios;
 
   return (
@@ -74,51 +89,54 @@ export default function FutureSalarioSection({ scenarios, targetYear, monthlyPen
       <div>
         <h2 className="text-lg font-semibold text-gray-100">Poder adquisitivo al retiro</h2>
         <p className="text-sm text-gray-400 mt-1">
-          Basado en el historial del salario mínimo entre {moderate.fromYear} y {moderate.toYear}{" "}
-          ({moderate.dataPointCount} datos, fuente: MTESS / impuestospy.com), el crecimiento anual promedio fue del{" "}
-          <strong>{pct(moderate.annualGrowthRate)}</strong>. Aplicando ese ritmo y variantes, el salario mínimo en {targetYear} rondará:
+          Basado en el historial del salario mínimo entre {moderate.fromYear} y {moderate.toYear} (
+          {moderate.dataPointCount} datos, fuente: MTESS / impuestospy.com), el crecimiento anual
+          promedio fue del <strong>{pct(moderate.annualGrowthRate)}</strong>. Aplicando ese ritmo y
+          variantes, el salario mínimo en {targetYear} rondará:
         </p>
-        <p className="text-xs text-gray-600 mt-0.5">Hacé clic en un escenario para seleccionarlo.</p>
+        <p className="text-xs text-gray-600 mt-0.5">
+          Hacé clic en un escenario para seleccionarlo.
+        </p>
       </div>
 
       <div className="overflow-x-auto">
-      <div className="flex flex-col gap-2">
-        <div className="grid grid-cols-4 gap-3 px-4 text-xs text-gray-600 font-medium uppercase tracking-wide min-w-[600px]">
-          <span>Escenario sal. mínimo</span>
-          <span>Sal. mínimo en {targetYear}</span>
-          <span>Tu renta mensual</span>
-          <span>Tu renta / sal. mínimo</span>
+        <div className="flex flex-col gap-2">
+          <div className="grid grid-cols-4 gap-3 px-4 text-xs text-gray-600 font-medium uppercase tracking-wide min-w-[600px]">
+            <span>Escenario sal. mínimo</span>
+            <span>Sal. mínimo en {targetYear}</span>
+            <span>Tu renta mensual</span>
+            <span>Tu renta / sal. mínimo</span>
+          </div>
+          <ScenarioRow
+            label={slow.label}
+            growthRate={slow.annualGrowthRate}
+            projectedSalario={slow.projectedValue}
+            monthlyPayout={monthlyPensionPayout}
+            selected={selectedSalarioScenario === "slow"}
+            onClick={() => onSelectSalarioScenario("slow")}
+          />
+          <ScenarioRow
+            label={moderate.label}
+            growthRate={moderate.annualGrowthRate}
+            projectedSalario={moderate.projectedValue}
+            monthlyPayout={monthlyPensionPayout}
+            selected={selectedSalarioScenario === "moderate"}
+            onClick={() => onSelectSalarioScenario("moderate")}
+          />
+          <ScenarioRow
+            label={fast.label}
+            growthRate={fast.annualGrowthRate}
+            projectedSalario={fast.projectedValue}
+            monthlyPayout={monthlyPensionPayout}
+            selected={selectedSalarioScenario === "fast"}
+            onClick={() => onSelectSalarioScenario("fast")}
+          />
         </div>
-        <ScenarioRow
-          label={slow.label}
-          growthRate={slow.annualGrowthRate}
-          projectedSalario={slow.projectedValue}
-          monthlyPayout={monthlyPensionPayout}
-          selected={selectedSalarioScenario === "slow"}
-          onClick={() => onSelectSalarioScenario("slow")}
-        />
-        <ScenarioRow
-          label={moderate.label}
-          growthRate={moderate.annualGrowthRate}
-          projectedSalario={moderate.projectedValue}
-          monthlyPayout={monthlyPensionPayout}
-          selected={selectedSalarioScenario === "moderate"}
-          onClick={() => onSelectSalarioScenario("moderate")}
-        />
-        <ScenarioRow
-          label={fast.label}
-          growthRate={fast.annualGrowthRate}
-          projectedSalario={fast.projectedValue}
-          monthlyPayout={monthlyPensionPayout}
-          selected={selectedSalarioScenario === "fast"}
-          onClick={() => onSelectSalarioScenario("fast")}
-        />
-      </div>
       </div>
 
       <p className="text-xs text-gray-600">
-        A mayor crecimiento del salario mínimo, menor es el poder adquisitivo relativo de tu jubilación.
-        El escenario "Alto" es el desfavorable para el jubilado.
+        A mayor crecimiento del salario mínimo, menor es el poder adquisitivo relativo de tu
+        jubilación. El escenario &quot;Alto&quot; es el desfavorable para el jubilado.
       </p>
     </div>
   );

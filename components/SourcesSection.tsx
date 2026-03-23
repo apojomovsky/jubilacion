@@ -9,32 +9,38 @@ interface Source {
 const SOURCES: Source[] = [
   {
     name: "MTESS Paraguay: Salario Mínimo Legal",
-    description: "Normativa, evolución histórica y cobertura del salario mínimo legal en Paraguay. Sistema de Información del Mercado Laboral (SIMEL).",
+    description:
+      "Normativa, evolución histórica y cobertura del salario mínimo legal en Paraguay. Sistema de Información del Mercado Laboral (SIMEL).",
     url: "https://simel.mtess.gov.py/archivos/3324",
   },
   {
     name: "impuestospy.com: Salarios Mínimos Históricos",
-    description: "Compilación de salarios mínimos legales vigentes 1992–2025 basada en resoluciones del MTESS.",
+    description:
+      "Compilación de salarios mínimos legales vigentes 1992–2025 basada en resoluciones del MTESS.",
     url: "https://impuestospy.com/salarios-minimos/",
   },
   {
     name: "BCP: Índice de Precios al Consumidor (IPC)",
-    description: "Serie histórica de inflación del Banco Central del Paraguay, utilizada como referencia para el análisis de poder adquisitivo real.",
+    description:
+      "Serie histórica de inflación del Banco Central del Paraguay, utilizada como referencia para el análisis de poder adquisitivo real.",
     url: "https://www.bcp.gov.py/en/indice-precios-al-consumidor-ipc",
   },
   {
     name: "economia.com.py: Poder adquisitivo del salario mínimo",
-    description: "Análisis comparativo 1989–2025: inflación acumulada 2.005% vs ajustes salariales 1.600%, resultando en una pérdida real del ~24% en 36 años.",
+    description:
+      "Análisis comparativo 1989–2025: inflación acumulada 2.005% vs ajustes salariales 1.600%, resultando en una pérdida real del ~24% en 36 años.",
     url: "https://economia.com.py/trabajadores-paraguayos-pierden-24-de-poder-adquisitivo-en-36-anos-mientras-debate-del-salario-minimo-expone-fallas-del-sistema-de-reajuste/",
   },
   {
     name: "Superintendencia de Pensiones de Chile: Rentabilidad de Fondos",
-    description: "Rentabilidad real histórica de fondos AFP desde julio de 1981. Fondo C: +7.26% real anual acumulado. Referencia comparativa para sistemas de capitalización individual en LatAm.",
+    description:
+      "Rentabilidad real histórica de fondos AFP desde julio de 1981. Fondo C: +7.26% real anual acumulado. Referencia comparativa para sistemas de capitalización individual en LatAm.",
     url: "https://www.spensiones.cl/apps/rentabilidad/getRentabilidad.php?tiprent=FP",
   },
   {
     name: "OCDE: Pensions at a Glance 2023",
-    description: "Supuesto estándar de crecimiento real de salarios en proyecciones actuariales: 1.25% anual real. Indicadores de pensiones OCDE y G20.",
+    description:
+      "Supuesto estándar de crecimiento real de salarios en proyecciones actuariales: 1.25% anual real. Indicadores de pensiones OCDE y G20.",
     url: "https://www.oecd-ilibrary.org/finance-and-investment/pensions-at-a-glance-2023_678055dd-en",
   },
 ];
@@ -45,11 +51,14 @@ export default function SourcesSection() {
       <div className="rounded-xl border border-amber-800 bg-amber-950 p-4">
         <p className="text-sm font-semibold text-amber-300 mb-1">Aviso importante</p>
         <p className="text-sm text-amber-400">
-          Esta herramienta es exclusivamente orientativa y <strong>no constituye asesoramiento financiero, previsional ni de ningún tipo</strong>.
-          Los valores calculados son estimaciones basadas en modelos matemáticos y datos históricos que <strong>no garantizan resultados futuros</strong>.
-          Las proyecciones dependen de supuestos que pueden no materializarse: rendimientos pasados no predicen rendimientos futuros,
-          y las condiciones económicas pueden cambiar sustancialmente a lo largo de décadas.
-          Consultá con un asesor financiero o previsional calificado antes de tomar cualquier decisión de ahorro o inversión.
+          Esta herramienta es exclusivamente orientativa y{" "}
+          <strong>no constituye asesoramiento financiero, previsional ni de ningún tipo</strong>.
+          Los valores calculados son estimaciones basadas en modelos matemáticos y datos históricos
+          que <strong>no garantizan resultados futuros</strong>. Las proyecciones dependen de
+          supuestos que pueden no materializarse: rendimientos pasados no predicen rendimientos
+          futuros, y las condiciones económicas pueden cambiar sustancialmente a lo largo de
+          décadas. Consultá con un asesor financiero o previsional calificado antes de tomar
+          cualquier decisión de ahorro o inversión.
         </p>
       </div>
 
@@ -62,7 +71,12 @@ export default function SourcesSection() {
               <div>
                 <span className="font-medium text-gray-200">
                   {s.url ? (
-                    <a href={s.url} target="_blank" rel="noopener noreferrer" className="hover:underline text-blue-400">
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline text-blue-400"
+                    >
                       {s.name}
                     </a>
                   ) : (
@@ -77,8 +91,9 @@ export default function SourcesSection() {
       </div>
 
       <p className="text-xs text-gray-600">
-        Código fuente disponible y auditado. Los cálculos siguen fórmulas estándar de valor futuro de anualidades (fijas y crecientes)
-        y CAGR (tasa de crecimiento anual compuesta). Ver sección "Modelo matemático" para detalles.
+        Código fuente disponible y auditado. Los cálculos siguen fórmulas estándar de valor futuro
+        de anualidades (fijas y crecientes) y CAGR (tasa de crecimiento anual compuesta). Ver
+        sección &quot;Modelo matemático&quot; para detalles.
       </p>
     </div>
   );

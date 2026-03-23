@@ -78,7 +78,15 @@ function ScenarioColumn({
   );
 }
 
-export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread, currentAge, retirementAge, selectedScenario, onSelectScenario }: Props) {
+export default function ResultsDisplay({
+  scenarios,
+  currentSalaryMinimo,
+  spread,
+  currentAge,
+  retirementAge,
+  selectedScenario,
+  onSelectScenario,
+}: Props) {
   const { pessimistic, base, optimistic } = scenarios;
   const { yearsContributing, yearsInRetirement } = base;
 
@@ -88,10 +96,14 @@ export default function ResultsDisplay({ scenarios, currentSalaryMinimo, spread,
         <div className="flex items-baseline gap-2">
           <h2 className="text-lg font-semibold text-gray-100">Proyección de tu fondo</h2>
           <span className="text-sm text-gray-500">
-            {yearsContributing} años de aporte (de los {currentAge} a los {retirementAge}) · {yearsInRetirement} años de retiro · spread ±{(spread * 100).toFixed(0)}pp
+            {yearsContributing} años de aporte (de los {currentAge} a los {retirementAge}) ·{" "}
+            {yearsInRetirement} años de retiro · spread ±{(spread * 100).toFixed(0)}pp
           </span>
         </div>
-        <p className="text-xs text-gray-500 mt-0.5">Hacé clic en un escenario para seleccionarlo. El gráfico y las secciones de abajo se actualizan.</p>
+        <p className="text-xs text-gray-500 mt-0.5">
+          Hacé clic en un escenario para seleccionarlo. El gráfico y las secciones de abajo se
+          actualizan.
+        </p>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <ScenarioColumn

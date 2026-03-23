@@ -54,6 +54,7 @@ OpenCode can be pointed to it via its config. Remind the user to configure that 
 4. **Register slash commands** for tools that support them:
 
 For Claude Code, create a one-liner shim:
+
 ```bash
 mkdir -p ~/.claude/commands
 echo 'Follow the instructions in skills/kickoff.md in the current project.' > ~/.claude/commands/kickoff.md

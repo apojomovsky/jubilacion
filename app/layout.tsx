@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Previsor — Jubilación privada Paraguay",
-  description: "Proyectá tu jubilación privada considerando inflación real y salario mínimo de Paraguay.",
+  description:
+    "Proyectá tu jubilación privada considerando inflación real y salario mínimo de Paraguay.",
 };
 
 export default function RootLayout({

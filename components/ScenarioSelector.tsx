@@ -67,8 +67,12 @@ export default function ScenarioSelector({
   return (
     <div className="rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        <span className="text-xs font-bold text-blue-700 uppercase tracking-wide">Escenario activo</span>
-        <span className="text-xs text-blue-500">· las secciones de abajo responden a esta selección</span>
+        <span className="text-xs font-bold text-blue-700 uppercase tracking-wide">
+          Escenario activo
+        </span>
+        <span className="text-xs text-blue-500">
+          · las secciones de abajo responden a esta selección
+        </span>
       </div>
       <PillGroup
         label="Rendimiento del fondo"

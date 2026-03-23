@@ -31,24 +31,26 @@ Previsor proyecta el fondo acumulado y la renta mensual de un sistema de capital
 
 ## Stack
 
-| Capa | Tecnología |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| UI | React 19, Tailwind CSS 4 |
-| Gráficos | Recharts 3 |
-| Lenguaje | TypeScript 5 |
-| Tests | Jest 30 |
+| Capa      | Tecnología               |
+| --------- | ------------------------ |
+| Framework | Next.js 16 (App Router)  |
+| UI        | React 19, Tailwind CSS 4 |
+| Gráficos  | Recharts 3               |
+| Lenguaje  | TypeScript 5             |
+| Tests     | Jest 30                  |
 
 ## Modelo matemático
 
 Las proyecciones usan fórmulas estándar de valor futuro:
 
 **Anualidad fija:**
+
 ```
 FV = PMT × [((1 + r)^n − 1) / r]
 ```
 
 **Anualidad creciente** (cuando el aporte aumenta cada año):
+
 ```
 FV = PMT × [(1 + r)^n − (1 + g)^n] / (r − g)
 ```
